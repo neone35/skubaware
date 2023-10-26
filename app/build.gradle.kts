@@ -76,6 +76,9 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2")
     implementation("com.facebook.stetho:stetho:1.6.0")
     implementation("com.facebook.stetho:stetho-okhttp3:1.6.0")
+    // database
+    implementation("androidx.room:room-ktx:2.6.0")
+    androidTestImplementation("androidx.room:room-testing:2.6.0")
     // Logging
     implementation("com.jakewharton.timber:timber:5.0.1")
 
