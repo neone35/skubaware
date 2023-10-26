@@ -1,10 +1,14 @@
 package com.arturmaslov.skubaware.data.models
 
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 @Entity
 data class Product(
+
+	@field:PrimaryKey(autoGenerate = true)
+	val id: Int? = null,
 
 	@field:SerializedName("IMG_URL")
 	val imgUrl: String? = null,

@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.arturmaslov.skubaware.data.models.Product
 import com.arturmaslov.skubaware.ui.theme.SkubaWareTheme
 
 @Preview(showBackground = true)
@@ -14,7 +15,26 @@ import com.arturmaslov.skubaware.ui.theme.SkubaWareTheme
 fun LoadingPreview() {
     SkubaWareTheme {
         LoadingScreen(showLoading = true) {
-            Greeting("Android")
+            ProductList(
+                listOf(
+                    Product(
+                        imgUrl = null,
+                        quantity = 2,
+                        skn = "FSDFSDF",
+                        brand = "Skulabamba",
+                        name = "padangeles",
+                        buyerCode = 45415
+                    ),
+                    Product(
+                        imgUrl = null,
+                        quantity = 2,
+                        skn = "FSDFSDF",
+                        brand = "Skulabamba",
+                        name = "padangeles",
+                        buyerCode = 45415
+                    )
+                )
+            )
         }
     }
 }

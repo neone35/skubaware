@@ -22,7 +22,7 @@ interface ProductDao {
 
     // returns row id of inserted item
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertProduct(product: Product?): Long
+    fun insertProduct(product: Product): Long
 
     // returns number of rows affected
     @Query("DELETE FROM product")

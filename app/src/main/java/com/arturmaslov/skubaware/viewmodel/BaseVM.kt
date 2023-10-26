@@ -18,8 +18,8 @@ open class BaseVM(
 
     val remoteResponse: LiveData<String?> get() = mainRepo.remoteResponse
 
-    private val _internetIsAvailable = MutableLiveData<Boolean?>()
-    val extInternetAvailable: LiveData<Boolean?> get() = _internetIsAvailable
+    private val _internetIsAvailable = MutableLiveData(false)
+    val extInternetAvailable: LiveData<Boolean> get() = _internetIsAvailable
     private val _loadStatus = MutableLiveData<LoadStatus>()
     val extLoadStatus: LiveData<LoadStatus> get() = _loadStatus
 

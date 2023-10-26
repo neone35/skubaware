@@ -25,7 +25,7 @@ class MainVM(
         Timber.i("MainVM created!")
     }
 
-    fun updateLocalProductList() {
+    fun setLocalProductList() {
         Timber.i("Running HomeVM updateLocalProductList")
         viewModelScope.launch {
             setLoadStatus(LoadStatus.LOADING)
