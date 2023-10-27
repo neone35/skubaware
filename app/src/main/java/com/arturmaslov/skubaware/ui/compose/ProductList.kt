@@ -61,7 +61,7 @@ fun ProductListPreview() {
 @Composable
 fun ProductList(productList: List<Product?>, modifier: Modifier = Modifier) {
     LazyColumn(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.then(Modifier.fillMaxWidth()),
         contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top)
     ) {

@@ -24,9 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import com.arturmaslov.skubaware.R
 import com.arturmaslov.skubaware.data.source.remote.LoadStatus
+import com.arturmaslov.skubaware.ui.compose.LandscapeLayoutSideBySide
 import com.arturmaslov.skubaware.ui.compose.LoadingScreen
 import com.arturmaslov.skubaware.ui.compose.PortraitLayoutWithTabs
-import com.arturmaslov.skubaware.ui.compose.ProductList
 import com.arturmaslov.skubaware.ui.theme.SkubaWareTheme
 import com.arturmaslov.skubaware.utils.UiHelper
 import com.arturmaslov.skubaware.viewmodel.MainVM
@@ -45,7 +45,6 @@ class MainActivity : ComponentActivity(), UiHelper {
         super.onCreate(savedInstanceState)
         setObservers()
         setListeners()
-        mainVM.setLocalProductList()
 
         setContent {
             val internetAvailable = mainVM.extInternetAvailable.observeAsState().value
@@ -85,7 +84,7 @@ class MainActivity : ComponentActivity(), UiHelper {
                                     if (isPortrait) {
                                         PortraitLayoutWithTabs(productList = productList)
                                     } else {
-                                        ProductList(productList = productList)
+                                        LandscapeLayoutSideBySide(productList = productList)
                                     }
                                 }
                             }
