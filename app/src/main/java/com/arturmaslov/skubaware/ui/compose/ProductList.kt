@@ -39,7 +39,7 @@ fun ProductListPreview() {
                     skn = "FSDFSDF",
                     brand = "Skulabamba",
                     name = "padangeles",
-                    buyerCode = 45415
+                    buyerCode = "484849"
                 ),
                 Product(
                     imgUrl = null,
@@ -47,7 +47,7 @@ fun ProductListPreview() {
                     skn = "FSDFSDF",
                     brand = "Skulabamba",
                     name = "padangeles",
-                    buyerCode = 45415
+                    buyerCode = "484849"
                 )
             )
         )
@@ -91,48 +91,83 @@ fun ProductCard(product: Product?, imgUrl: String?) {
                 modifier = Modifier.size(56.dp),
                 contentScale = ContentScale.Fit,
             )
-            Column(
-                verticalArrangement = Arrangement.spacedBy(0.dp, Alignment.Top),
-                horizontalAlignment = Alignment.Start,
+            MainDataColumn(
                 modifier = Modifier
                     .weight(1.0f)
-                    .padding(end = 8.dp)
-            ) {
-                val skn =
-                    if (product?.skn?.isNotEmpty() == true)
-                        ("#" + product.skn) else Constants.EMPTY_STRING
-                Text(
-                    text = skn,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                Text(
-                    text = product?.brand ?: Constants.EMPTY_STRING,
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-                Text(
-                    text = product?.name ?: Constants.EMPTY_STRING,
-                    style = MaterialTheme.typography.labelMedium,
-                )
-            }
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(0.dp, Alignment.Start),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.align(Alignment.CenterVertically)
-            ) {
-                Text(
-                    text = product?.quantity ?: Constants.EMPTY_STRING,
-                    style = MaterialTheme.typography.labelLarge,
-                )
-                Image(
-                    painter = painterResource(id = R.drawable.ic_arrow_right_24),
-                    contentDescription = Constants.EMPTY_STRING,
-                    contentScale = ContentScale.None,
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
-                    modifier = Modifier.size(40.dp)
-                )
-            }
+                    .padding(end = 8.dp),
+                product = product
+            )
+            AmountWithArrowRow(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                product = product
+            )
         }
+    }
+}
+
+@Composable
+fun MainDataColumn(
+    modifier: Modifier,
+    product: Product?
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(0.dp, Alignment.Top),
+        horizontalAlignment = Alignment.Start,
+        modifier = modifier
+    ) {
+        val skn =
+            if (product?.skn?.isNotEmpty() == true)
+                ("SKN#" + product.skn) else Constants.EMPTY_STRING
+        val buyerCode =
+            if (product?.buyerCode?.isNotEmpty() == true)
+                ("BC#" + product.buyerCode) else Constants.EMPTY_STRING
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
+            verticalAlignment = Alignment.Top
+        ) {
+            Text(
+                text = skn,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                text = buyerCode,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+        Text(
+            text = product?.brand ?: Constants.EMPTY_STRING,
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.secondary
+        )
+        Text(
+            text = product?.name ?: Constants.EMPTY_STRING,
+            style = MaterialTheme.typography.labelMedium,
+        )
+    }
+}
+
+@Composable
+fun AmountWithArrowRow(
+    modifier: Modifier,
+    product: Product?
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(0.dp, Alignment.Start),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
+        Text(
+            text = product?.quantity ?: Constants.EMPTY_STRING,
+            style = MaterialTheme.typography.labelLarge,
+        )
+        Image(
+            painter = painterResource(id = R.drawable.ic_arrow_right_24),
+            contentDescription = Constants.EMPTY_STRING,
+            contentScale = ContentScale.None,
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+            modifier = Modifier.size(40.dp)
+        )
     }
 }

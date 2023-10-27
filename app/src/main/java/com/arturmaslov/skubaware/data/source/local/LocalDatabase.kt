@@ -6,7 +6,7 @@ import com.arturmaslov.skubaware.data.models.Product
 @Database(
     entities = [
         Product::class,
-    ], version = 2
+    ], version = 3
 )
 @TypeConverters(Converters::class)
 abstract class LocalDatabase : RoomDatabase() {

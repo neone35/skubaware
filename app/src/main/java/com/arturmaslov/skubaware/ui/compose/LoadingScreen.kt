@@ -23,7 +23,7 @@ fun LoadingPreview() {
                         skn = "FSDFSDF",
                         brand = "Skulabamba",
                         name = "padangeles",
-                        buyerCode = 45415
+                        buyerCode = "484849"
                     ),
                     Product(
                         imgUrl = null,
@@ -31,7 +31,7 @@ fun LoadingPreview() {
                         skn = "FSDFSDF",
                         brand = "Skulabamba",
                         name = "padangeles",
-                        buyerCode = 45415
+                        buyerCode = "484849"
                     )
                 )
             )

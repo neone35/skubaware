@@ -26,5 +26,5 @@ data class Product(
 	val name: String? = null,
 
 	@field:SerializedName("BUYER_CODE")
-	val buyerCode: Int? = null
+	val buyerCode: String? = null
 )
