@@ -86,7 +86,7 @@ fun ProductCard(product: Product?, imgUrl: String?) {
                 .fillMaxWidth()
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher_background),
+                painter = painterResource(id = R.drawable.ic_logo),
                 contentDescription = null,
                 modifier = Modifier.size(56.dp),
                 contentScale = ContentScale.Fit,
