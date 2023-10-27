@@ -26,6 +26,10 @@ import com.arturmaslov.skubaware.R
 import com.arturmaslov.skubaware.data.models.Product
 import com.arturmaslov.skubaware.ui.theme.SkubaWareTheme
 import com.arturmaslov.tgnba.utils.Constants
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.components.rememberImageComponent
+import com.skydoves.landscapist.glide.GlideImage
+import com.skydoves.landscapist.placeholder.placeholder.PlaceholderPlugin
 
 @Preview(showBackground = true)
 @Composable
@@ -58,7 +62,8 @@ fun ProductListPreview() {
 fun ProductList(productList: List<Product?>, modifier: Modifier = Modifier) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(16.dp)
+        contentPadding = PaddingValues(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top)
     ) {
         itemsIndexed(productList) { index, product ->
             ProductCard(
@@ -73,7 +78,6 @@ fun ProductList(productList: List<Product?>, modifier: Modifier = Modifier) {
 fun ProductCard(product: Product?, imgUrl: String?) {
     Card(
         modifier = Modifier
-            .padding(10.dp)
             .fillMaxWidth()
             .wrapContentHeight(),
         shape = MaterialTheme.shapes.medium
@@ -85,11 +89,17 @@ fun ProductCard(product: Product?, imgUrl: String?) {
                 .padding(start = 16.dp, top = 12.dp, end = 12.dp, bottom = 12.dp)
                 .fillMaxWidth()
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_logo),
-                contentDescription = null,
-                modifier = Modifier.size(56.dp),
-                contentScale = ContentScale.Fit,
+            GlideImage(
+                imageModel = { product?.imgUrl },
+                imageOptions = ImageOptions(
+                    contentScale = ContentScale.Crop,
+                    alignment = Alignment.Center
+                ),
+                component = rememberImageComponent {
+                    +PlaceholderPlugin.Loading(painterResource(id = R.drawable.ic_logo))
+                    +PlaceholderPlugin.Failure(painterResource(id = R.drawable.ic_logo))
+                },
+                modifier = Modifier.size(56.dp)
             )
             MainDataColumn(
                 modifier = Modifier

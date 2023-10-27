@@ -75,6 +75,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.runtime:runtime-livedata")
+    implementation("com.github.skydoves:landscapist-glide:2.2.10")
+    implementation("com.github.skydoves:landscapist-placeholder:2.2.10")
     // network
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
