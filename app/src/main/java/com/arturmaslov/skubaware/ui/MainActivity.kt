@@ -1,9 +1,12 @@
 package com.arturmaslov.skubaware.ui
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -13,12 +16,16 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import com.arturmaslov.skubaware.R
 import com.arturmaslov.skubaware.data.source.remote.LoadStatus
 import com.arturmaslov.skubaware.ui.compose.LoadingScreen
+import com.arturmaslov.skubaware.ui.compose.PortraitLayoutWithTabs
 import com.arturmaslov.skubaware.ui.compose.ProductList
 import com.arturmaslov.skubaware.ui.theme.SkubaWareTheme
 import com.arturmaslov.skubaware.utils.UiHelper
@@ -58,7 +65,6 @@ class MainActivity : ComponentActivity(), UiHelper {
                         )
                     },
                     content = {
-                        // A surface container using the 'background' color from the theme
                         Surface(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -69,7 +75,19 @@ class MainActivity : ComponentActivity(), UiHelper {
                                 showLoading =
                                 loadStatus == LoadStatus.LOADING || internetAvailable == false
                             ) {
-                                ProductList(productList = productList)
+                                val context = LocalContext.current
+                                val isPortrait =
+                                    context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+                                Column(
+                                    verticalArrangement = Arrangement.spacedBy(0.dp, Alignment.Top),
+                                    horizontalAlignment = Alignment.Start
+                                ) {
+                                    if (isPortrait) {
+                                        PortraitLayoutWithTabs(productList = productList)
+                                    } else {
+                                        ProductList(productList = productList)
+                                    }
+                                }
                             }
                         }
                     }
