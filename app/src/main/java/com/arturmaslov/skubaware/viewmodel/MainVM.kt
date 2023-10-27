@@ -40,6 +40,7 @@ class MainVM(
                     // do not update local DB if remote data is the same
                     if (!isEqual(localProducts, remoteProducts)) {
                         val rowIds: MutableList<Int> = mutableListOf()
+                        mainRepo.deleteProducts()
                         remoteProducts?.forEach {
                             it.let { product -> mainRepo.insertProduct(product) }
                                 ?.let { rowId -> rowIds.add(rowId.toInt()) }

@@ -19,7 +19,7 @@ fun LoadingPreview() {
                 listOf(
                     Product(
                         imgUrl = null,
-                        quantity = 2,
+                        quantity = "2",
                         skn = "FSDFSDF",
                         brand = "Skulabamba",
                         name = "padangeles",
@@ -27,7 +27,7 @@ fun LoadingPreview() {
                     ),
                     Product(
                         imgUrl = null,
-                        quantity = 2,
+                        quantity = "2",
                         skn = "FSDFSDF",
                         brand = "Skulabamba",
                         name = "padangeles",

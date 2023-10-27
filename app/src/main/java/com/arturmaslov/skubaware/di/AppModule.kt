@@ -13,6 +13,7 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 val appModule = module {
     single { provideOkHttpClient() }
@@ -45,12 +46,16 @@ private fun provideRetrofit(
     return retrofit
 }
 
-private fun provideOkHttpClient() = if (BuildConfig.DEBUG) {
-    val loggingInterceptor = HttpLoggingInterceptor()
-    loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
-    OkHttpClient.Builder()
-        .addInterceptor(loggingInterceptor)
-        .build()
-} else OkHttpClient
-    .Builder()
-    .build()
+private fun provideOkHttpClient(): OkHttpClient {
+    val clientBuilder = OkHttpClient.Builder()
+        .connectTimeout(Constants.REMOTE_TIMEOUT_SEC, TimeUnit.SECONDS)
+        .readTimeout(Constants.REMOTE_TIMEOUT_SEC, TimeUnit.SECONDS)
+
+    if (BuildConfig.DEBUG) {
+        val loggingInterceptor = HttpLoggingInterceptor()
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+        clientBuilder.addInterceptor(loggingInterceptor)
+    }
+
+    return clientBuilder.build()
+}

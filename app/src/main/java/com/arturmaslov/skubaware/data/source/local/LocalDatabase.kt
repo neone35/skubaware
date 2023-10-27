@@ -2,12 +2,11 @@ package com.arturmaslov.skubaware.data.source.local
 
 import androidx.room.*
 import com.arturmaslov.skubaware.data.models.Product
-import com.arturmaslov.tgnba.data.source.local.Converters
 
 @Database(
     entities = [
         Product::class,
-    ], version = 1
+    ], version = 2
 )
 @TypeConverters(Converters::class)
 abstract class LocalDatabase : RoomDatabase() {

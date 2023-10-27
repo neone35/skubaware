@@ -1,6 +1,7 @@
 package com.arturmaslov.skubaware.ui.compose
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,7 +35,7 @@ fun ProductListPreview() {
             listOf(
                 Product(
                     imgUrl = null,
-                    quantity = 2,
+                    quantity = "2",
                     skn = "FSDFSDF",
                     brand = "Skulabamba",
                     name = "padangeles",
@@ -41,7 +43,7 @@ fun ProductListPreview() {
                 ),
                 Product(
                     imgUrl = null,
-                    quantity = 2,
+                    quantity = "2",
                     skn = "FSDFSDF",
                     brand = "Skulabamba",
                     name = "padangeles",
@@ -60,7 +62,7 @@ fun ProductList(productList: List<Product?>, modifier: Modifier = Modifier) {
     ) {
         itemsIndexed(productList) { index, product ->
             ProductCard(
-                name = product?.name,
+                product = product,
                 imgUrl = product?.imgUrl
             )
         }
@@ -68,7 +70,7 @@ fun ProductList(productList: List<Product?>, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ProductCard(name: String?, imgUrl: String?) {
+fun ProductCard(product: Product?, imgUrl: String?) {
     Card(
         modifier = Modifier
             .padding(10.dp)
@@ -77,25 +79,58 @@ fun ProductCard(name: String?, imgUrl: String?) {
         shape = MaterialTheme.shapes.medium
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.Start),
+            verticalAlignment = Alignment.Top,
+            modifier = Modifier
+                .padding(start = 16.dp, top = 12.dp, end = 12.dp, bottom = 12.dp)
+                .fillMaxWidth()
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_launcher_background),
                 contentDescription = null,
-                modifier = Modifier
-                    .size(130.dp)
-                    .padding(8.dp),
+                modifier = Modifier.size(56.dp),
                 contentScale = ContentScale.Fit,
             )
-            Column(Modifier.padding(8.dp)) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(0.dp, Alignment.Top),
+                horizontalAlignment = Alignment.Start,
+                modifier = Modifier
+                    .weight(1.0f)
+                    .padding(end = 8.dp)
+            ) {
+                val skn =
+                    if (product?.skn?.isNotEmpty() == true)
+                        ("#" + product.skn) else Constants.EMPTY_STRING
                 Text(
-                    text = name ?: Constants.EMPTY_STRING,
-                    style = MaterialTheme.typography.headlineMedium,
+                    text = skn,
+                    style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    text = name ?: Constants.EMPTY_STRING,
-                    style = MaterialTheme.typography.bodyMedium,
+                    text = product?.brand ?: Constants.EMPTY_STRING,
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                Text(
+                    text = product?.name ?: Constants.EMPTY_STRING,
+                    style = MaterialTheme.typography.labelMedium,
+                )
+            }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(0.dp, Alignment.Start),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            ) {
+                Text(
+                    text = product?.quantity ?: Constants.EMPTY_STRING,
+                    style = MaterialTheme.typography.labelLarge,
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.ic_arrow_right_24),
+                    contentDescription = Constants.EMPTY_STRING,
+                    contentScale = ContentScale.None,
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+                    modifier = Modifier.size(40.dp)
                 )
             }
         }

@@ -14,7 +14,7 @@ data class Product(
 	val imgUrl: String? = null,
 
 	@field:SerializedName("QUANTITY")
-	val quantity: Int? = null,
+	val quantity: String? = null,
 
 	@field:SerializedName("SKN")
 	val skn: String? = null,

@@ -122,7 +122,6 @@ class MainActivity : ComponentActivity(), UiHelper {
         if (!repoResponseLD.hasObservers()) {
             repoResponseLD.observe(this) {
                 Timber.i("observeRepositoryResponse: $it")
-                ToastUtils.updateShort(this, "$it")
             }
         }
     }
