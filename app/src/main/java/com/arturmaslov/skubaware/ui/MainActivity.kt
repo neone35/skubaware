@@ -13,13 +13,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import com.arturmaslov.skubaware.R
@@ -27,6 +24,7 @@ import com.arturmaslov.skubaware.data.source.remote.LoadStatus
 import com.arturmaslov.skubaware.ui.compose.LandscapeLayoutSideBySide
 import com.arturmaslov.skubaware.ui.compose.LoadingScreen
 import com.arturmaslov.skubaware.ui.compose.PortraitLayoutWithTabs
+import com.arturmaslov.skubaware.ui.compose.SkubaTopAppBar
 import com.arturmaslov.skubaware.ui.theme.SkubaWareTheme
 import com.arturmaslov.skubaware.utils.UiHelper
 import com.arturmaslov.skubaware.viewmodel.MainVM
@@ -55,14 +53,9 @@ class MainActivity : ComponentActivity(), UiHelper {
                 if (!it) ToastUtils.updateLong(this, getString(R.string.no_internet))
             }
 
-
             SkubaWareTheme {
                 Scaffold(
-                    topBar = {
-                        TopAppBar(
-                            title = { Text(stringResource(R.string.app_name)) }
-                        )
-                    },
+                    topBar = { SkubaTopAppBar() },
                     content = {
                         Surface(
                             modifier = Modifier
