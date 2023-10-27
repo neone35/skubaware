@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.arturmaslov.skubaware.R
 import com.arturmaslov.skubaware.data.models.Product
 import com.arturmaslov.skubaware.ui.theme.SkubaWareTheme
 
@@ -33,7 +34,9 @@ fun LoadingPreview() {
                         name = "padangeles",
                         buyerCode = "484849"
                     )
-                )
+                ),
+                onClick = {},
+                endIconId = R.drawable.ic_add_24
             )
         }
     }

@@ -18,24 +18,24 @@ open class BaseVM(
 
     val remoteResponse: LiveData<String?> get() = mainRepo.remoteResponse
 
-    private val _internetIsAvailable = MutableLiveData(false)
-    val extInternetAvailable: LiveData<Boolean> get() = _internetIsAvailable
-    private val _loadStatus = MutableLiveData<LoadStatus>()
-    val extLoadStatus: LiveData<LoadStatus> get() = _loadStatus
+    private val internetIsAvailable = MutableLiveData(false)
+    private val loadStatus = MutableLiveData<LoadStatus>()
 
     init {
         // runs every time VM is created (not view created)
         viewModelScope.launch {
-            _loadStatus.value = LoadStatus.LOADING
-            _internetIsAvailable.value = NetworkChecker(app).isNetworkConnected()
-            _loadStatus.value = LoadStatus.DONE
+            loadStatus.value = LoadStatus.LOADING
+            internetIsAvailable.value = NetworkChecker(app).isNetworkConnected()
+            loadStatus.value = LoadStatus.DONE
         }
     }
 
     fun setLoadStatus(status: LoadStatus) {
         Timber.i("Running BaseVM setBaseStatus with $status")
-        _loadStatus.value = status
+        loadStatus.value = status
     }
 
+    fun internetIsAvailable() = internetIsAvailable
+    fun loadStatus() = loadStatus
 
 }

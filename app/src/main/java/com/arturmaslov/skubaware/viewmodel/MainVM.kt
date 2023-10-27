@@ -1,7 +1,6 @@
 package com.arturmaslov.skubaware.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.arturmaslov.skubaware.data.models.Product
@@ -15,10 +14,9 @@ class MainVM(
     app: Application
 ) : BaseVM(mainRepo, app) {
 
-    private val _productList = MutableLiveData<List<Product?>?>()
-    val extProductList: LiveData<List<Product?>?> get() = _productList
-    private val _productSortOption = MutableLiveData<String?>()
-    val extProductSortOption: LiveData<String?> get() = _productSortOption
+    private val initialProductList = MutableLiveData<List<Product?>?>(emptyList())
+    private val finalProductList = MutableLiveData<List<Product?>?>(emptyList())
+    private val productSortOption = MutableLiveData(ProductSortOption.NAME)
 
     init {
         // runs every time VM is created (not view created)
@@ -33,9 +31,8 @@ class MainVM(
             try {
                 val localProducts = mainRepo.getLocalProducts().value
                 // show local data without internet
-                if (extInternetAvailable.value == false && !localProducts.isNullOrEmpty()) {
-                    _productList.value = localProducts
-                    sortProductList(ProductSortOption.NAME) // default sort
+                if (internetIsAvailable().value == false && !localProducts.isNullOrEmpty()) {
+                    initialProductList.value = localProducts
                 } else {
                     val remoteProducts = mainRepo.fetchProductResponse().value
                     // do not update local DB if remote data is the same
@@ -47,11 +44,10 @@ class MainVM(
                                 ?.let { rowId -> rowIds.add(rowId.toInt()) }
                         }
                         Timber.d("$rowIds ids inserted into database")
-                        _productList.value = mainRepo.getLocalProducts().value
+                        initialProductList.value = mainRepo.getLocalProducts().value
                     } else {
                         Timber.i("MainVM productList local=remote")
-                        _productList.value = mainRepo.getLocalProducts().value
-                        sortProductList(ProductSortOption.NAME) // default sort
+                        initialProductList.value = mainRepo.getLocalProducts().value
                     }
                 }
                 setLoadStatus(LoadStatus.DONE)
@@ -74,20 +70,28 @@ class MainVM(
         return true
     }
 
-    fun sortProductList(by: ProductSortOption) {
+    fun sortProductLists(by: ProductSortOption) {
         Timber.i("Running HomeVM sortProductList with $by")
         viewModelScope.launch {
             setLoadStatus(LoadStatus.LOADING)
             try {
-                _productList.value = _productList.value?.sortedBy {
+                initialProductList.value = initialProductList.value?.sortedBy {
                     when (by) {
                         ProductSortOption.SKN -> it?.skn
                         ProductSortOption.NAME -> it?.name
                         ProductSortOption.BRAND -> it?.brand
-                        ProductSortOption.BUYER_CODE -> it?.buyerCode.toString()
+                        ProductSortOption.BUYER_CODE -> it?.buyerCode
                     }
                 }
-                _productSortOption.value = by.sortOption
+                finalProductList.value = finalProductList.value?.sortedBy {
+                    when (by) {
+                        ProductSortOption.SKN -> it?.skn
+                        ProductSortOption.NAME -> it?.name
+                        ProductSortOption.BRAND -> it?.brand
+                        ProductSortOption.BUYER_CODE -> it?.buyerCode
+                    }
+                }
+                productSortOption.value = by
                 setLoadStatus(LoadStatus.DONE)
             } catch (e: Exception) {
                 setLoadStatus(LoadStatus.ERROR)
@@ -95,6 +99,42 @@ class MainVM(
             }
         }
     }
+
+    fun transferToFinalList(product: Product) {
+        // remove from initial
+        val tempInitialProductList = initialProductList.value?.toMutableList()
+        initialProductList.value = tempInitialProductList
+            ?.filter { tempProduct ->
+                tempProduct?.id != product.id
+            }
+
+        // add to final
+        val tempFinalProductList = finalProductList.value?.toMutableList()
+        tempFinalProductList?.add(product)
+        finalProductList.value = tempFinalProductList
+
+        sortProductLists(productSortOption.value!!)
+    }
+
+    fun transferToInitialList(product: Product) {
+        // remove from final
+        val tempFinalProductList = finalProductList.value?.toMutableList()
+        finalProductList.value = tempFinalProductList
+            ?.filter { tempProduct ->
+                tempProduct?.id != product.id
+            }
+
+        // add to initial
+        val tempInitialProductList = initialProductList.value?.toMutableList()
+        tempInitialProductList?.add(product)
+        initialProductList.value = tempInitialProductList
+
+        sortProductLists(productSortOption.value!!)
+    }
+
+    fun initialProductList() = initialProductList
+    fun finalProductList() = finalProductList
+    fun productSortOption() = productSortOption
 
 }
 

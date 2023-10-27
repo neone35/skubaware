@@ -45,9 +45,11 @@ class MainActivity : ComponentActivity(), UiHelper {
         setListeners()
 
         setContent {
-            val internetAvailable = mainVM.extInternetAvailable.observeAsState().value
-            val loadStatus = mainVM.extLoadStatus.observeAsState().value
-            val productList = mainVM.extProductList.observeAsState().value ?: emptyList()
+            val internetAvailable = mainVM.internetIsAvailable().observeAsState().value
+            val loadStatus = mainVM.loadStatus().observeAsState().value
+            val initialProductList =
+                mainVM.initialProductList().observeAsState().value ?: emptyList()
+            val finalProductList = mainVM.finalProductList().observeAsState().value ?: emptyList()
 
             internetAvailable?.let {
                 if (!it) ToastUtils.updateLong(this, getString(R.string.no_internet))
@@ -56,7 +58,7 @@ class MainActivity : ComponentActivity(), UiHelper {
             SkubaWareTheme {
                 Scaffold(
                     topBar = { SkubaTopAppBar() },
-                    content = {
+                    content = { it ->
                         Surface(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -75,9 +77,35 @@ class MainActivity : ComponentActivity(), UiHelper {
                                     horizontalAlignment = Alignment.Start
                                 ) {
                                     if (isPortrait) {
-                                        PortraitLayoutWithTabs(productList = productList)
+                                        PortraitLayoutWithTabs(
+                                            initialProductList = initialProductList,
+                                            finalProductList = finalProductList,
+                                            onInitialClick = { product ->
+                                                mainVM.transferToFinalList(
+                                                    product
+                                                )
+                                            },
+                                            onFinalClick = { product ->
+                                                mainVM.transferToInitialList(
+                                                    product
+                                                )
+                                            }
+                                        )
                                     } else {
-                                        LandscapeLayoutSideBySide(productList = productList)
+                                        LandscapeLayoutSideBySide(
+                                            initialProductList = initialProductList,
+                                            finalProductList = finalProductList,
+                                            onInitialClick = { product ->
+                                                mainVM.transferToFinalList(
+                                                    product
+                                                )
+                                            },
+                                            onFinalClick = { product ->
+                                                mainVM.transferToInitialList(
+                                                    product
+                                                )
+                                            }
+                                        )
                                     }
                                 }
                             }
@@ -89,7 +117,7 @@ class MainActivity : ComponentActivity(), UiHelper {
     }
 
     override fun setObservers() {
-        observeLoadStatus(mainVM.extLoadStatus)
+        observeLoadStatus(mainVM.loadStatus())
         observeRepositoryResponse(mainVM.remoteResponse)
     }
 
@@ -128,7 +156,6 @@ class MainActivity : ComponentActivity(), UiHelper {
     }
 
     private fun observeRepositoryResponse(repoResponseLD: LiveData<String?>) {
-        println("observeRepositoryResponse called")
         if (!repoResponseLD.hasObservers()) {
             repoResponseLD.observe(this) {
                 Timber.i("observeRepositoryResponse: $it")

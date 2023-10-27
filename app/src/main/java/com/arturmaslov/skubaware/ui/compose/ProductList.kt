@@ -1,6 +1,7 @@
 package com.arturmaslov.skubaware.ui.compose
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -53,29 +54,46 @@ fun ProductListPreview() {
                     name = "padangeles",
                     buyerCode = "484849"
                 )
-            )
+            ),
+            onClick = {},
+            endIconId = R.drawable.ic_add_24
         )
+
     }
 }
 
 @Composable
-fun ProductList(productList: List<Product?>, modifier: Modifier = Modifier) {
+fun ProductList(
+    productList: List<Product?>,
+    modifier: Modifier = Modifier,
+    onClick: (Product) -> Unit,
+    endIconId: Int
+) {
     LazyColumn(
         modifier = modifier.then(Modifier.fillMaxWidth()),
         contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top)
     ) {
         itemsIndexed(productList) { index, product ->
-            ProductCard(
-                product = product,
-                imgUrl = product?.imgUrl
-            )
+            product?.let {
+                ProductCard(
+                    product = it,
+                    imgUrl = product.imgUrl,
+                    onClick,
+                    endIconId
+                )
+            }
         }
     }
 }
 
 @Composable
-fun ProductCard(product: Product?, imgUrl: String?) {
+fun ProductCard(
+    product: Product,
+    imgUrl: String?,
+    onClick: (Product) -> Unit,
+    endIconId: Int
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -99,6 +117,7 @@ fun ProductCard(product: Product?, imgUrl: String?) {
                     +PlaceholderPlugin.Loading(painterResource(id = R.drawable.ic_logo))
                     +PlaceholderPlugin.Failure(painterResource(id = R.drawable.ic_logo))
                 },
+                previewPlaceholder = R.drawable.ic_logo,
                 modifier = Modifier.size(56.dp)
             )
             MainDataColumn(
@@ -107,9 +126,12 @@ fun ProductCard(product: Product?, imgUrl: String?) {
                     .padding(end = 8.dp),
                 product = product
             )
-            AmountWithArrowRow(
-                modifier = Modifier.align(Alignment.CenterVertically),
-                product = product
+            AmountWithIconRow(
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .clickable { onClick(product) },
+                product = product,
+                iconId = endIconId
             )
         }
     }
@@ -125,27 +147,7 @@ fun MainDataColumn(
         horizontalAlignment = Alignment.Start,
         modifier = modifier
     ) {
-        val skn =
-            if (product?.skn?.isNotEmpty() == true)
-                ("SKN#" + product.skn) else Constants.EMPTY_STRING
-        val buyerCode =
-            if (product?.buyerCode?.isNotEmpty() == true)
-                ("BC#" + product.buyerCode) else Constants.EMPTY_STRING
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
-            verticalAlignment = Alignment.Top
-        ) {
-            Text(
-                text = skn,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            Text(
-                text = buyerCode,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-        }
+        IdentifierRow(product)
         Text(
             text = product?.brand ?: Constants.EMPTY_STRING,
             style = MaterialTheme.typography.titleSmall,
@@ -159,9 +161,37 @@ fun MainDataColumn(
 }
 
 @Composable
-fun AmountWithArrowRow(
-    modifier: Modifier,
+fun IdentifierRow(
     product: Product?
+) {
+    val skn =
+        if (product?.skn?.isNotEmpty() == true)
+            ("SKN#" + product.skn) else Constants.EMPTY_STRING
+    val buyerCode =
+        if (product?.buyerCode?.isNotEmpty() == true)
+            ("BC#" + product.buyerCode) else Constants.EMPTY_STRING
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
+        verticalAlignment = Alignment.Top
+    ) {
+        Text(
+            text = skn,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        Text(
+            text = buyerCode,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+    }
+}
+
+@Composable
+fun AmountWithIconRow(
+    modifier: Modifier,
+    product: Product?,
+    iconId: Int
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(0.dp, Alignment.Start),
@@ -173,7 +203,7 @@ fun AmountWithArrowRow(
             style = MaterialTheme.typography.labelLarge,
         )
         Image(
-            painter = painterResource(id = R.drawable.ic_arrow_right_24),
+            painter = painterResource(id = iconId),
             contentDescription = Constants.EMPTY_STRING,
             contentScale = ContentScale.None,
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
