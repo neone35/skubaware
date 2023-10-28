@@ -17,14 +17,18 @@ fun MainLayout(
     onFinalClick: (Product) -> Unit
 ) {
     val context = LocalContext.current
-    val isPortrait =
-        context.resources.configuration.orientation ==
-                Configuration.ORIENTATION_PORTRAIT
+
+    val configuration = context.resources.configuration
+    val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
+    val screenWidthInDp = configuration.screenWidthDp.dp
+    val isWideEnough = screenWidthInDp >= 600.dp
+
     Column(
         verticalArrangement = Arrangement.spacedBy(0.dp, Alignment.Top),
         horizontalAlignment = Alignment.Start
     ) {
-        if (isPortrait) {
+        if (isPortrait && !isWideEnough) {
             PortraitLayoutWithTabs(
                 initialProductList = initialProductList,
                 finalProductList = finalProductList,
@@ -40,5 +44,4 @@ fun MainLayout(
             )
         }
     }
-
 }

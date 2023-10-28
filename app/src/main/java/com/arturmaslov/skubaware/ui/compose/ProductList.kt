@@ -7,13 +7,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -71,9 +72,13 @@ fun ProductList(
     onClick: (Product) -> Unit,
     endIconId: Int
 ) {
-    Box(Modifier.fillMaxSize()) {
+    Box(
+        modifier.then(Modifier.fillMaxHeight())
+    ) {
+        val listState = rememberLazyListState()
         LazyColumn(
-            modifier = modifier.then(Modifier.fillMaxWidth()),
+            state = listState,
+            modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top)
         ) {
@@ -110,10 +115,8 @@ fun ProductCard(
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.Start),
-            verticalAlignment = Alignment.Top,
-            modifier = Modifier
-                .padding(start = 16.dp, top = 12.dp, end = 12.dp, bottom = 12.dp)
-                .fillMaxWidth()
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
         ) {
             GlideImage(
                 imageModel = { product.imgUrl },
@@ -126,12 +129,13 @@ fun ProductCard(
                     +PlaceholderPlugin.Failure(painterResource(id = R.drawable.ic_logo))
                 },
                 previewPlaceholder = R.drawable.ic_logo,
-                modifier = Modifier.size(56.dp)
+                modifier = Modifier
+                    .size(100.dp)
             )
             MainDataColumn(
                 modifier = Modifier
                     .weight(1.0f)
-                    .padding(end = 8.dp),
+                    .padding(top = 12.dp, end = 12.dp, bottom = 12.dp),
                 product = product
             )
             AmountWithIconRow(
