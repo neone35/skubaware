@@ -10,7 +10,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.LiveData
 import com.arturmaslov.skubaware.R
@@ -41,25 +45,28 @@ class MainActivity : ComponentActivity(), UiHelper {
 
         setContent {
             val internetAvailable = mainVM.internetIsAvailable().observeAsState().value
+            internetAvailable?.let {
+                if (!it) ToastUtils.updateLong(this, getString(R.string.no_internet))
+            }
             val loadStatus = mainVM.loadStatus().observeAsState().value
+
             val initialProductList =
                 mainVM.initialProductList().observeAsState().value ?: emptyList()
             val finalProductList = mainVM.finalProductList().observeAsState().value ?: emptyList()
 
-            internetAvailable?.let {
-                if (!it) ToastUtils.updateLong(this, getString(R.string.no_internet))
-            }
+            var isFilterSortDialogVisible by remember { mutableStateOf(false) }
+            val productSortOption = mainVM.productSortOption().observeAsState().value!!
 
             SkubaWareTheme {
                 Scaffold(
                     topBar = {
                         SkubaTopAppBar(
                             onFilterClick = {
-                                ToastUtils.updateShort(this, "Filters clicked")
+                                isFilterSortDialogVisible = true
                             }
                         )
                     },
-                    content = { it ->
+                    content = {
                         Surface(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -73,16 +80,8 @@ class MainActivity : ComponentActivity(), UiHelper {
                                 MainLayout(
                                     initialProductList = initialProductList,
                                     finalProductList = finalProductList,
-                                    onInitialClick = { product ->
-                                        mainVM.transferToFinalList(
-                                            product
-                                        )
-                                    },
-                                    onFinalClick = { product ->
-                                        mainVM.transferToInitialList(
-                                            product
-                                        )
-                                    },
+                                    onInitialClick = { product -> mainVM.transferToFinalList(product) },
+                                    onFinalClick = { product -> mainVM.transferToInitialList(product) },
                                     onFabClick = {
                                         if (finalProductList.isNotEmpty()) {
                                             generateAndOpenJsonFile(finalProductList)
@@ -92,7 +91,15 @@ class MainActivity : ComponentActivity(), UiHelper {
                                                 getString(R.string.no_products_added)
                                             )
                                         }
-                                    }
+                                    },
+                                    isFilterSortDialogVisible = isFilterSortDialogVisible,
+                                    onFilterSortChanged = { productSortOption ->
+                                        mainVM.filterSortProductLists(productSortOption)
+                                    },
+                                    onFilterSortDialogDismiss = {
+                                        isFilterSortDialogVisible = false
+                                    },
+                                    currentSortOption = productSortOption
                                 )
                             }
                         }

@@ -17,6 +17,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.arturmaslov.skubaware.R
 import com.arturmaslov.skubaware.data.models.Product
+import com.arturmaslov.skubaware.viewmodel.ProductSortOption
 import com.arturmaslov.tgnba.utils.Constants
 
 @Composable
@@ -25,7 +26,11 @@ fun MainLayout(
     finalProductList: List<Product?>,
     onInitialClick: (Product) -> Unit,
     onFinalClick: (Product) -> Unit,
-    onFabClick: () -> Unit
+    onFabClick: () -> Unit,
+    isFilterSortDialogVisible: Boolean,
+    onFilterSortChanged: (ProductSortOption) -> Unit,
+    onFilterSortDialogDismiss: () -> Unit,
+    currentSortOption: ProductSortOption
 ) {
     val context = LocalContext.current
 
@@ -67,6 +72,13 @@ fun MainLayout(
             Icon(
                 ImageVector.vectorResource(R.drawable.ic_check_24),
                 contentDescription = Constants.EMPTY_STRING
+            )
+        }
+        if (isFilterSortDialogVisible) {
+            SortDialog(
+                onFilterSortSelected = { onFilterSortChanged(it) },
+                onDismiss = onFilterSortDialogDismiss,
+                currentSortOption
             )
         }
     }

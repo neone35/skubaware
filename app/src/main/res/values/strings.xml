@@ -1,9 +1,14 @@
 <resources>
     <string name="app_name">SkubaWare</string>
-    <string name="no_internet">No internet connection. Try later.</string>
+    <string name="no_internet">Nėra interneto ryšio. Bandykite vėliau</string>
     <string name="first_tab_title">Pradinis</string>
     <string name="second_tab_title">Galutinis</string>
     <string name="in_the_list">sąraše</string>
     <string name="quantity">kiekio</string>
     <string name="no_products_added">No products added</string>
+    <string name="sort_by">Rūšiuoti pagal</string>
+    <string name="skn">Prekės kodas</string>
+    <string name="brand">Gamintojas</string>
+    <string name="name">Vardas</string>
+    <string name="buyer_code">Pirkėjo kodas</string>
 </resources>

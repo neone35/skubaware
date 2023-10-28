@@ -3,6 +3,8 @@ package com.arturmaslov.skubaware.viewmodel
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.arturmaslov.skubaware.App
+import com.arturmaslov.skubaware.R
 import com.arturmaslov.skubaware.data.models.Product
 import com.arturmaslov.skubaware.data.source.MainRepository
 import com.arturmaslov.skubaware.data.source.remote.LoadStatus
@@ -50,7 +52,7 @@ class MainVM(
                         initialProductList.value = mainRepo.getLocalProducts().value
                     }
                 }
-                sortProductLists(productSortOption.value!!)
+                filterSortProductLists(productSortOption.value!!)
                 setLoadStatus(LoadStatus.DONE)
             } catch (e: Exception) {
                 setLoadStatus(LoadStatus.ERROR)
@@ -71,7 +73,7 @@ class MainVM(
         return true
     }
 
-    fun sortProductLists(by: ProductSortOption) {
+    fun filterSortProductLists(by: ProductSortOption) {
         Timber.i("Running HomeVM sortProductList with $by")
         viewModelScope.launch {
             setLoadStatus(LoadStatus.LOADING)
@@ -114,7 +116,7 @@ class MainVM(
         tempFinalProductList?.add(product)
         finalProductList.value = tempFinalProductList
 
-        sortProductLists(productSortOption.value!!)
+        filterSortProductLists(productSortOption.value!!)
     }
 
     fun transferToInitialList(product: Product) {
@@ -130,7 +132,7 @@ class MainVM(
         tempInitialProductList?.add(product)
         initialProductList.value = tempInitialProductList
 
-        sortProductLists(productSortOption.value!!)
+        filterSortProductLists(productSortOption.value!!)
     }
 
     fun initialProductList() = initialProductList
@@ -140,8 +142,8 @@ class MainVM(
 }
 
 enum class ProductSortOption(val sortOption: String) {
-    SKN("SKN"),
-    BRAND("Brand"),
-    NAME("Name"),
-    BUYER_CODE("Buyer code");
+    SKN(App.getAppContext().getString(R.string.skn)),
+    BRAND(App.getAppContext().getString(R.string.brand)),
+    NAME(App.getAppContext().getString(R.string.name)),
+    BUYER_CODE(App.getAppContext().getString(R.string.buyer_code));
 }
