@@ -17,7 +17,7 @@ fun LandscapeLayoutSideBySide(
     onFinalClick: (Product) -> Unit
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
+        horizontalArrangement = Arrangement.spacedBy(0.dp, Alignment.Start),
         verticalAlignment = Alignment.Top
     ) {
         ProductList(

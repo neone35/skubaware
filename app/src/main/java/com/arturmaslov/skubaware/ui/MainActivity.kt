@@ -48,7 +48,13 @@ class MainActivity : ComponentActivity(), UiHelper {
 
             SkubaWareTheme {
                 Scaffold(
-                    topBar = { SkubaTopAppBar() },
+                    topBar = {
+                        SkubaTopAppBar(
+                            onFilterClick = {
+                                ToastUtils.updateShort(this, "Filters clicked")
+                            }
+                        )
+                    },
                     content = { it ->
                         Surface(
                             modifier = Modifier
@@ -72,6 +78,9 @@ class MainActivity : ComponentActivity(), UiHelper {
                                         mainVM.transferToInitialList(
                                             product
                                         )
+                                    },
+                                    onFabClick = {
+                                        ToastUtils.updateShort(this, "FAB clicked")
                                     }
                                 )
                             }

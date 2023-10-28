@@ -29,13 +29,17 @@ import com.arturmaslov.tgnba.utils.Constants
 @Composable
 fun SkubaTopAppBarPreview() {
     SkubaWareTheme {
-        SkubaTopAppBar()
+        SkubaTopAppBar(
+            onFilterClick = {}
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SkubaTopAppBar() {
+fun SkubaTopAppBar(
+    onFilterClick: () -> Unit
+) {
     TopAppBar(
         navigationIcon = {
             Image(
@@ -56,7 +60,7 @@ fun SkubaTopAppBar() {
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
                 verticalAlignment = Alignment.Top
             ) {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = onFilterClick) {
                     Icon(
                         ImageVector.vectorResource(R.drawable.ic_filter_alt_24),
                         contentDescription = Constants.EMPTY_STRING,
