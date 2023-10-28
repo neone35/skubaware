@@ -1,6 +1,7 @@
 package com.arturmaslov.skubaware
 
 import android.app.Application
+import android.content.Context
 import com.arturmaslov.skubaware.di.appModule
 import com.arturmaslov.tgnba.di.repoModule
 import com.arturmaslov.tgnba.di.viewModelModule
@@ -12,6 +13,9 @@ import timber.log.Timber
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
+        instance = this
+        if (BuildConfig.DEBUG)
+            Timber.plant(Timber.DebugTree())
 
         startKoin {
             // Log Koin into Android logger
@@ -21,7 +25,12 @@ class App : Application() {
             // Load modules
             modules(listOf(appModule, repoModule, viewModelModule))
         }
+    }
 
-        if (BuildConfig.DEBUG) Timber.plant(Timber.DebugTree())
+    companion object {
+        private lateinit var instance: App
+        fun getAppContext(): Context {
+            return instance.applicationContext
+        }
     }
 }

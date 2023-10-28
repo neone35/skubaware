@@ -1,5 +1,6 @@
 package com.arturmaslov.skubaware.ui
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
@@ -13,14 +14,16 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.LiveData
 import com.arturmaslov.skubaware.R
+import com.arturmaslov.skubaware.data.models.Product
 import com.arturmaslov.skubaware.data.source.remote.LoadStatus
 import com.arturmaslov.skubaware.ui.compose.LoadingScreen
 import com.arturmaslov.skubaware.ui.compose.MainLayout
 import com.arturmaslov.skubaware.ui.compose.SkubaTopAppBar
 import com.arturmaslov.skubaware.ui.theme.SkubaWareTheme
+import com.arturmaslov.skubaware.utils.HelperUtils
+import com.arturmaslov.skubaware.utils.ToastUtils
 import com.arturmaslov.skubaware.utils.UiHelper
 import com.arturmaslov.skubaware.viewmodel.MainVM
-import com.arturmaslov.tgnba.utils.ToastUtils
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -34,6 +37,7 @@ class MainActivity : ComponentActivity(), UiHelper {
         super.onCreate(savedInstanceState)
         setObservers()
         setListeners()
+
 
         setContent {
             val internetAvailable = mainVM.internetIsAvailable().observeAsState().value
@@ -80,7 +84,14 @@ class MainActivity : ComponentActivity(), UiHelper {
                                         )
                                     },
                                     onFabClick = {
-                                        ToastUtils.updateShort(this, "FAB clicked")
+                                        if (finalProductList.isNotEmpty()) {
+                                            generateAndOpenJsonFile(finalProductList)
+                                        } else {
+                                            ToastUtils.updateShort(
+                                                this,
+                                                getString(R.string.no_products_added)
+                                            )
+                                        }
                                     }
                                 )
                             }
@@ -135,6 +146,20 @@ class MainActivity : ComponentActivity(), UiHelper {
             repoResponseLD.observe(this) {
                 Timber.i("observeRepositoryResponse: $it")
             }
+        }
+    }
+
+    private fun generateAndOpenJsonFile(dataList: List<Product?>) {
+        // Create a JSON file
+        val filename = "output_data_${HelperUtils.getCurrentDateTime()}.json"
+        val jsonUri = HelperUtils.storePlainTextFileInMediaStore(dataList, filename)
+
+        // Open the JSON file with an external app
+        jsonUri.let {
+            val openIntent = Intent(Intent.ACTION_VIEW)
+            openIntent.setDataAndType(it, contentResolver.getType(it))
+            openIntent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+            startActivity(openIntent)
         }
     }
 }

@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arturmaslov.skubaware.data.source.MainRepository
 import com.arturmaslov.skubaware.data.source.remote.LoadStatus
-import com.arturmaslov.tgnba.utils.NetworkChecker
+import com.arturmaslov.skubaware.utils.NetworkChecker
 import kotlinx.coroutines.launch
 import timber.log.Timber
 

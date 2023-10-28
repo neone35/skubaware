@@ -1,4 +1,4 @@
-package com.arturmaslov.tgnba.utils
+package com.arturmaslov.skubaware.utils
 
 import android.content.Context
 import android.widget.Toast
