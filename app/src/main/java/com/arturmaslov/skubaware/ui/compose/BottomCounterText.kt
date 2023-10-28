@@ -21,7 +21,8 @@ fun BottomCounterText(
     val listQuantitySum = countSumOfQuantities(productList)
 
     val listSizeTitle = stringResource(R.string.in_the_list) + " " + listSize
-    val listQuantitySumTitle = listQuantitySum.toString() + " " + stringResource(R.string.quantity)
+    val listQuantitySumTitle =
+        listQuantitySum.toString() + " " + stringResource(R.string.of_quantity)
 
     Text(
         modifier = modifier.then(

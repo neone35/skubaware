@@ -17,14 +17,14 @@ import com.arturmaslov.skubaware.data.models.Product
 
 @Composable
 fun PortraitLayoutWithTabs(
-    initialProductList: List<Product?>,
+    startProductList: List<Product?>,
     finalProductList: List<Product?>,
-    onInitialClick: (Product) -> Unit,
+    onStartClick: (Product) -> Unit,
     onFinalClick: (Product) -> Unit
 ) {
     val tabs = listOf(
-        stringResource(R.string.first_tab_title),
-        stringResource(R.string.second_tab_title)
+        stringResource(R.string.initial_title),
+        stringResource(R.string.final_title)
     )
     var tabIndex by remember { mutableIntStateOf(0) }
     TabRow(selectedTabIndex = tabIndex) {
@@ -40,8 +40,8 @@ fun PortraitLayoutWithTabs(
     }
     when (tabIndex) {
         0 -> ProductList(
-            productList = initialProductList,
-            onClick = onInitialClick,
+            productList = startProductList,
+            onClick = onStartClick,
             endIconId = R.drawable.ic_add_24
         )
 

@@ -17,20 +17,23 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.arturmaslov.skubaware.R
 import com.arturmaslov.skubaware.data.models.Product
+import com.arturmaslov.skubaware.viewmodel.ProductFilterOption
 import com.arturmaslov.skubaware.viewmodel.ProductSortOption
 import com.arturmaslov.tgnba.utils.Constants
 
 @Composable
 fun MainLayout(
     initialProductList: List<Product?>,
+    startProductList: List<Product?>,
     finalProductList: List<Product?>,
-    onInitialClick: (Product) -> Unit,
+    onStartClick: (Product) -> Unit,
     onFinalClick: (Product) -> Unit,
     onFabClick: () -> Unit,
     isFilterSortDialogVisible: Boolean,
-    onFilterSortChanged: (ProductSortOption) -> Unit,
+    onSortOptionChanged: (ProductSortOption) -> Unit,
     onFilterSortDialogDismiss: () -> Unit,
-    currentSortOption: ProductSortOption
+    currentSortOption: ProductSortOption,
+    onFilterOptionChanged: (ProductFilterOption, String, String) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -49,16 +52,16 @@ fun MainLayout(
         ) {
             if (isPortrait && !isWideEnough) {
                 PortraitLayoutWithTabs(
-                    initialProductList = initialProductList,
+                    startProductList = startProductList,
                     finalProductList = finalProductList,
-                    onInitialClick = onInitialClick,
+                    onStartClick = onStartClick,
                     onFinalClick = onFinalClick
                 )
             } else {
                 LandscapeLayoutSideBySide(
-                    initialProductList = initialProductList,
+                    startProductList = startProductList,
                     finalProductList = finalProductList,
-                    onInitialClick = onInitialClick,
+                    onStartClick = onStartClick,
                     onFinalClick = onFinalClick
                 )
             }
@@ -76,9 +79,13 @@ fun MainLayout(
         }
         if (isFilterSortDialogVisible) {
             SortDialog(
-                onFilterSortSelected = { onFilterSortChanged(it) },
+                onSortOptionSelected = { onSortOptionChanged(it) },
+                onFilterOptionSelected = { option, from, to ->
+                    onFilterOptionChanged(option, from, to)
+                },
                 onDismiss = onFilterSortDialogDismiss,
-                currentSortOption
+                currentSortOption = currentSortOption,
+                initialProductList = initialProductList
             )
         }
     }

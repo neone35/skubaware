@@ -50,8 +50,9 @@ class MainActivity : ComponentActivity(), UiHelper {
             }
             val loadStatus = mainVM.loadStatus().observeAsState().value
 
-            val initialProductList =
-                mainVM.initialProductList().observeAsState().value ?: emptyList()
+            val initialProductList = mainVM.initialProductList() ?: emptyList()
+            val startProductList =
+                mainVM.startProductList().observeAsState().value ?: emptyList()
             val finalProductList = mainVM.finalProductList().observeAsState().value ?: emptyList()
 
             var isFilterSortDialogVisible by remember { mutableStateOf(false) }
@@ -60,11 +61,7 @@ class MainActivity : ComponentActivity(), UiHelper {
             SkubaWareTheme {
                 Scaffold(
                     topBar = {
-                        SkubaTopAppBar(
-                            onFilterClick = {
-                                isFilterSortDialogVisible = true
-                            }
-                        )
+                        SkubaTopAppBar(onFilterClick = { isFilterSortDialogVisible = true })
                     },
                     content = {
                         Surface(
@@ -79,9 +76,10 @@ class MainActivity : ComponentActivity(), UiHelper {
                             ) {
                                 MainLayout(
                                     initialProductList = initialProductList,
+                                    startProductList = startProductList,
                                     finalProductList = finalProductList,
-                                    onInitialClick = { product -> mainVM.transferToFinalList(product) },
-                                    onFinalClick = { product -> mainVM.transferToInitialList(product) },
+                                    onStartClick = { product -> mainVM.transferToFinalList(product) },
+                                    onFinalClick = { product -> mainVM.transferToStartList(product) },
                                     onFabClick = {
                                         if (finalProductList.isNotEmpty()) {
                                             generateAndOpenJsonFile(finalProductList)
@@ -93,13 +91,20 @@ class MainActivity : ComponentActivity(), UiHelper {
                                         }
                                     },
                                     isFilterSortDialogVisible = isFilterSortDialogVisible,
-                                    onFilterSortChanged = { productSortOption ->
-                                        mainVM.filterSortProductLists(productSortOption)
+                                    onSortOptionChanged = { productSortOption ->
+                                        mainVM.sortProductLists(productSortOption)
                                     },
                                     onFilterSortDialogDismiss = {
                                         isFilterSortDialogVisible = false
                                     },
-                                    currentSortOption = productSortOption
+                                    currentSortOption = productSortOption,
+                                    onFilterOptionChanged = { option, from, to ->
+                                        mainVM.filterProductLists(
+                                            by = option,
+                                            from = from,
+                                            to = to
+                                        )
+                                    }
                                 )
                             }
                         }

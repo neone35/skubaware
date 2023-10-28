@@ -16,7 +16,8 @@ class MainVM(
     app: Application
 ) : BaseVM(mainRepo, app) {
 
-    private val initialProductList = MutableLiveData<List<Product?>?>(emptyList())
+    private var initialProductList: List<Product?>? = emptyList()
+    private val startProductList = MutableLiveData<List<Product?>?>(emptyList())
     private val finalProductList = MutableLiveData<List<Product?>?>(emptyList())
     private val productSortOption = MutableLiveData(ProductSortOption.BRAND)
 
@@ -34,7 +35,8 @@ class MainVM(
                 val localProducts = mainRepo.getLocalProducts().value
                 // show local data without internet
                 if (internetIsAvailable().value == false && !localProducts.isNullOrEmpty()) {
-                    initialProductList.value = localProducts
+                    initialProductList = localProducts
+                    startProductList.value = localProducts
                 } else {
                     val remoteProducts = mainRepo.fetchProductResponse().value
                     // do not update local DB if remote data is the same
@@ -46,13 +48,15 @@ class MainVM(
                                 ?.let { rowId -> rowIds.add(rowId.toInt()) }
                         }
                         Timber.d("$rowIds ids inserted into database")
-                        initialProductList.value = mainRepo.getLocalProducts().value
+                        initialProductList = mainRepo.getLocalProducts().value
+                        startProductList.value = mainRepo.getLocalProducts().value
                     } else {
-                        Timber.i("MainVM productList local=remote")
-                        initialProductList.value = mainRepo.getLocalProducts().value
+                        Timber.i("MainVM productList local==remote")
+                        initialProductList = localProducts
+                        startProductList.value = localProducts
                     }
                 }
-                filterSortProductLists(productSortOption.value!!)
+                sortProductLists(productSortOption.value!!)
                 setLoadStatus(LoadStatus.DONE)
             } catch (e: Exception) {
                 setLoadStatus(LoadStatus.ERROR)
@@ -73,17 +77,51 @@ class MainVM(
         return true
     }
 
-    fun filterSortProductLists(by: ProductSortOption) {
-        Timber.i("Running HomeVM sortProductList with $by")
+    fun filterProductLists(
+        by: ProductFilterOption,
+        from: String,
+        to: String
+    ) {
+        Timber.i("Running HomeVM filterProductLists with $by")
         viewModelScope.launch {
             setLoadStatus(LoadStatus.LOADING)
             try {
-                initialProductList.value = initialProductList.value?.sortedBy {
+                startProductList.value = initialProductList?.filter { product ->
+                    when (by) {
+                        ProductFilterOption.SKN -> {
+                            val noLetterSkn = product?.skn?.replace(Regex("[A-Za-z]"), "")
+                            val sknInt = noLetterSkn?.toFloat() ?: 0f
+                            val fromInt = from.toFloat()
+                            val toInt = to.toFloat()
+                            sknInt in fromInt..toInt
+                        }
+
+                        else -> {
+                            false
+                        }
+                    }
+                }
+                sortProductLists(productSortOption.value!!)
+                setLoadStatus(LoadStatus.DONE)
+            } catch (e: Exception) {
+                setLoadStatus(LoadStatus.ERROR)
+                Timber.e(e.localizedMessage!!)
+            }
+        }
+    }
+
+    fun sortProductLists(by: ProductSortOption) {
+        Timber.i("Running HomeVM sortProductLists with $by")
+        viewModelScope.launch {
+            setLoadStatus(LoadStatus.LOADING)
+            try {
+                startProductList.value = startProductList.value?.sortedBy {
                     when (by) {
                         ProductSortOption.SKN -> it?.skn
                         ProductSortOption.NAME -> it?.name
                         ProductSortOption.BRAND -> it?.brand
                         ProductSortOption.BUYER_CODE -> it?.buyerCode
+                        ProductSortOption.QUANTITY -> it?.quantity
                     }
                 }
                 finalProductList.value = finalProductList.value?.sortedBy {
@@ -92,6 +130,7 @@ class MainVM(
                         ProductSortOption.NAME -> it?.name
                         ProductSortOption.BRAND -> it?.brand
                         ProductSortOption.BUYER_CODE -> it?.buyerCode
+                        ProductSortOption.QUANTITY -> it?.quantity
                     }
                 }
                 productSortOption.value = by
@@ -104,9 +143,9 @@ class MainVM(
     }
 
     fun transferToFinalList(product: Product) {
-        // remove from initial
-        val tempInitialProductList = initialProductList.value?.toMutableList()
-        initialProductList.value = tempInitialProductList
+        // remove from start
+        val tempStartProductList = startProductList.value?.toMutableList()
+        startProductList.value = tempStartProductList
             ?.filter { tempProduct ->
                 tempProduct?.id != product.id
             }
@@ -116,10 +155,10 @@ class MainVM(
         tempFinalProductList?.add(product)
         finalProductList.value = tempFinalProductList
 
-        filterSortProductLists(productSortOption.value!!)
+        sortProductLists(productSortOption.value!!)
     }
 
-    fun transferToInitialList(product: Product) {
+    fun transferToStartList(product: Product) {
         // remove from final
         val tempFinalProductList = finalProductList.value?.toMutableList()
         finalProductList.value = tempFinalProductList
@@ -127,15 +166,16 @@ class MainVM(
                 tempProduct?.id != product.id
             }
 
-        // add to initial
-        val tempInitialProductList = initialProductList.value?.toMutableList()
-        tempInitialProductList?.add(product)
-        initialProductList.value = tempInitialProductList
+        // add to start
+        val tempStartProductList = startProductList.value?.toMutableList()
+        tempStartProductList?.add(product)
+        startProductList.value = tempStartProductList
 
-        filterSortProductLists(productSortOption.value!!)
+        sortProductLists(productSortOption.value!!)
     }
 
     fun initialProductList() = initialProductList
+    fun startProductList() = startProductList
     fun finalProductList() = finalProductList
     fun productSortOption() = productSortOption
 
@@ -145,5 +185,14 @@ enum class ProductSortOption(val sortOption: String) {
     SKN(App.getAppContext().getString(R.string.skn)),
     BRAND(App.getAppContext().getString(R.string.brand)),
     NAME(App.getAppContext().getString(R.string.name)),
-    BUYER_CODE(App.getAppContext().getString(R.string.buyer_code));
+    BUYER_CODE(App.getAppContext().getString(R.string.buyer_code)),
+    QUANTITY(App.getAppContext().getString(R.string.quantity));
+}
+
+enum class ProductFilterOption(val filterOption: String) {
+    SKN(App.getAppContext().getString(R.string.skn)),
+    BRAND(App.getAppContext().getString(R.string.brand)),
+    NAME(App.getAppContext().getString(R.string.name)),
+    BUYER_CODE(App.getAppContext().getString(R.string.buyer_code)),
+    QUANTITY(App.getAppContext().getString(R.string.quantity));
 }

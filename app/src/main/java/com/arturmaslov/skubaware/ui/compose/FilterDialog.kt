@@ -2,17 +2,22 @@ package com.arturmaslov.skubaware.ui.compose
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,7 +34,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.arturmaslov.skubaware.R
+import com.arturmaslov.skubaware.data.models.Product
 import com.arturmaslov.skubaware.ui.theme.SkubaWareTheme
+import com.arturmaslov.skubaware.viewmodel.ProductFilterOption
 import com.arturmaslov.skubaware.viewmodel.ProductSortOption
 import com.arturmaslov.tgnba.utils.Constants
 
@@ -38,25 +45,25 @@ import com.arturmaslov.tgnba.utils.Constants
 fun SortDialogPreview() {
     SkubaWareTheme {
         SortDialog(
-            onFilterSortSelected = {},
             onDismiss = {},
-            currentSortOption = ProductSortOption.BRAND
+            onSortOptionSelected = {},
+            currentSortOption = ProductSortOption.BRAND,
+            onFilterOptionSelected = { _, _, _ -> },
+            initialProductList = emptyList()
         )
     }
 }
 
 @Composable
 fun SortDialog(
-    onFilterSortSelected: (ProductSortOption) -> Unit,
     onDismiss: () -> Unit,
-    currentSortOption: ProductSortOption
+    onSortOptionSelected: (ProductSortOption) -> Unit,
+    currentSortOption: ProductSortOption,
+    onFilterOptionSelected: (ProductFilterOption, String, String) -> Unit,
+    initialProductList: List<Product?>
 ) {
-    val productSortOptionList = listOf(
-        ProductSortOption.BRAND,
-        ProductSortOption.NAME,
-        ProductSortOption.SKN,
-        ProductSortOption.BUYER_CODE
-    )
+    val productSortOptionList = ProductSortOption.values().toList()
+    val productFilterOptionList = ProductFilterOption.values().toList()
 
     Dialog(
         onDismissRequest = { onDismiss() }
@@ -79,11 +86,86 @@ fun SortDialog(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     itemsIndexed(productSortOptionList) { index, option ->
-                        SortOptionItem(option, onFilterSortSelected, currentSortOption)
+                        SortOptionItem(option, onSortOptionSelected, currentSortOption)
+                    }
+                }
+                Text(
+                    text = stringResource(R.string.filter_by),
+                    style = MaterialTheme.typography.titleSmall
+                )
+                LazyColumn {
+                    itemsIndexed(productFilterOptionList) { index, option ->
+                        FilterOptionItem(
+                            option,
+                            onFilterOptionSelected,
+                            initialProductList
+                        )
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun FilterOptionItem(
+    option: ProductFilterOption,
+    onFilterSelected: (ProductFilterOption, String, String) -> Unit,
+    initialProductList: List<Product?>
+) {
+    val initialMinValue = initialProductList
+        .minOfOrNull {
+            val noLetterSkn = it?.skn?.replace(Regex("[A-Za-z]"), "")
+            noLetterSkn?.toFloat() ?: 0.0f
+        }
+        ?: 0.0f
+    val initialMaxValue = initialProductList
+        .maxOfOrNull {
+            val noLetterSkn = it?.skn?.replace(Regex("[A-Za-z]"), "")
+            noLetterSkn?.toFloat() ?: 0.0f
+        }
+        ?: 0.0f
+    var slidingRange by remember {
+        mutableStateOf(initialMinValue..initialMaxValue)
+    }
+    when (option) {
+        ProductFilterOption.SKN -> {
+            Text(
+                text = option.filterOption,
+                style = MaterialTheme.typography.labelMedium
+            )
+            RangeSlider(
+                value = slidingRange,
+                steps = 100,
+                onValueChange = { range ->
+                    slidingRange = range
+                },
+                valueRange = initialMinValue..initialMaxValue,
+                onValueChangeFinished = {
+                    onFilterSelected(
+                        option,
+                        slidingRange.start.toString(),
+                        slidingRange.endInclusive.toString()
+                    )
+                },
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = slidingRange.start.toInt().toString(),
+                    style = MaterialTheme.typography.labelSmall,
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = slidingRange.endInclusive.toInt().toString(),
+                    style = MaterialTheme.typography.labelSmall,
+                )
+            }
+        }
+
+        else -> {}
     }
 }
 

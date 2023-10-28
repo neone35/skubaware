@@ -11,9 +11,9 @@ import com.arturmaslov.skubaware.data.models.Product
 
 @Composable
 fun LandscapeLayoutSideBySide(
-    initialProductList: List<Product?>,
+    startProductList: List<Product?>,
     finalProductList: List<Product?>,
-    onInitialClick: (Product) -> Unit,
+    onStartClick: (Product) -> Unit,
     onFinalClick: (Product) -> Unit
 ) {
     Row(
@@ -22,8 +22,8 @@ fun LandscapeLayoutSideBySide(
     ) {
         ProductList(
             modifier = Modifier.weight(1.0f),
-            productList = initialProductList,
-            onClick = onInitialClick,
+            productList = startProductList,
+            onClick = onStartClick,
             endIconId = R.drawable.ic_add_24
         )
         ProductList(
