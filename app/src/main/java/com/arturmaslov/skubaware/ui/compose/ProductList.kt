@@ -3,9 +3,11 @@ package com.arturmaslov.skubaware.ui.compose
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -69,28 +71,34 @@ fun ProductList(
     onClick: (Product) -> Unit,
     endIconId: Int
 ) {
-    LazyColumn(
-        modifier = modifier.then(Modifier.fillMaxWidth()),
-        contentPadding = PaddingValues(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top)
-    ) {
-        itemsIndexed(productList) { index, product ->
-            product?.let {
-                ProductCard(
-                    product = it,
-                    imgUrl = product.imgUrl,
-                    onClick,
-                    endIconId
-                )
+    Box(Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = modifier.then(Modifier.fillMaxWidth()),
+            contentPadding = PaddingValues(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top)
+        ) {
+            itemsIndexed(productList) { index, product ->
+                product?.let {
+                    ProductCard(
+                        product = it,
+                        onClick,
+                        endIconId
+                    )
+                }
             }
         }
+        BottomCounterText(
+            productList = productList,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 8.dp)
+        )
     }
 }
 
 @Composable
 fun ProductCard(
     product: Product,
-    imgUrl: String?,
     onClick: (Product) -> Unit,
     endIconId: Int
 ) {
@@ -108,7 +116,7 @@ fun ProductCard(
                 .fillMaxWidth()
         ) {
             GlideImage(
-                imageModel = { product?.imgUrl },
+                imageModel = { product.imgUrl },
                 imageOptions = ImageOptions(
                     contentScale = ContentScale.Crop,
                     alignment = Alignment.Center

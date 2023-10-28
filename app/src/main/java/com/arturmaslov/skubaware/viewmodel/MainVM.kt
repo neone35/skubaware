@@ -16,7 +16,7 @@ class MainVM(
 
     private val initialProductList = MutableLiveData<List<Product?>?>(emptyList())
     private val finalProductList = MutableLiveData<List<Product?>?>(emptyList())
-    private val productSortOption = MutableLiveData(ProductSortOption.NAME)
+    private val productSortOption = MutableLiveData(ProductSortOption.BRAND)
 
     init {
         // runs every time VM is created (not view created)
@@ -50,6 +50,7 @@ class MainVM(
                         initialProductList.value = mainRepo.getLocalProducts().value
                     }
                 }
+                sortProductLists(productSortOption.value!!)
                 setLoadStatus(LoadStatus.DONE)
             } catch (e: Exception) {
                 setLoadStatus(LoadStatus.ERROR)

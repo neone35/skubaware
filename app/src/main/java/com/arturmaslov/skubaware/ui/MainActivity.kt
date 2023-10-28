@@ -1,29 +1,21 @@
 package com.arturmaslov.skubaware.ui
 
-import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import com.arturmaslov.skubaware.R
 import com.arturmaslov.skubaware.data.source.remote.LoadStatus
-import com.arturmaslov.skubaware.ui.compose.LandscapeLayoutSideBySide
 import com.arturmaslov.skubaware.ui.compose.LoadingScreen
-import com.arturmaslov.skubaware.ui.compose.PortraitLayoutWithTabs
+import com.arturmaslov.skubaware.ui.compose.MainLayout
 import com.arturmaslov.skubaware.ui.compose.SkubaTopAppBar
 import com.arturmaslov.skubaware.ui.theme.SkubaWareTheme
 import com.arturmaslov.skubaware.utils.UiHelper
@@ -38,7 +30,6 @@ class MainActivity : ComponentActivity(), UiHelper {
 
     private var disableBackCallback: OnBackPressedCallback? = null
 
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setObservers()
@@ -69,45 +60,20 @@ class MainActivity : ComponentActivity(), UiHelper {
                                 showLoading =
                                 loadStatus == LoadStatus.LOADING || internetAvailable == false
                             ) {
-                                val context = LocalContext.current
-                                val isPortrait =
-                                    context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-                                Column(
-                                    verticalArrangement = Arrangement.spacedBy(0.dp, Alignment.Top),
-                                    horizontalAlignment = Alignment.Start
-                                ) {
-                                    if (isPortrait) {
-                                        PortraitLayoutWithTabs(
-                                            initialProductList = initialProductList,
-                                            finalProductList = finalProductList,
-                                            onInitialClick = { product ->
-                                                mainVM.transferToFinalList(
-                                                    product
-                                                )
-                                            },
-                                            onFinalClick = { product ->
-                                                mainVM.transferToInitialList(
-                                                    product
-                                                )
-                                            }
+                                MainLayout(
+                                    initialProductList = initialProductList,
+                                    finalProductList = finalProductList,
+                                    onInitialClick = { product ->
+                                        mainVM.transferToFinalList(
+                                            product
                                         )
-                                    } else {
-                                        LandscapeLayoutSideBySide(
-                                            initialProductList = initialProductList,
-                                            finalProductList = finalProductList,
-                                            onInitialClick = { product ->
-                                                mainVM.transferToFinalList(
-                                                    product
-                                                )
-                                            },
-                                            onFinalClick = { product ->
-                                                mainVM.transferToInitialList(
-                                                    product
-                                                )
-                                            }
+                                    },
+                                    onFinalClick = { product ->
+                                        mainVM.transferToInitialList(
+                                            product
                                         )
                                     }
-                                }
+                                )
                             }
                         }
                     }
