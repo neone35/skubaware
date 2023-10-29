@@ -1,4 +1,4 @@
-package com.arturmaslov.tgnba.di
+package com.arturmaslov.skubaware.di
 
 import android.app.Application
 import androidx.room.Room
@@ -7,7 +7,7 @@ import com.arturmaslov.skubaware.data.source.local.LocalDataSource
 import com.arturmaslov.skubaware.data.source.local.LocalDatabase
 import com.arturmaslov.skubaware.data.source.remote.Api
 import com.arturmaslov.skubaware.data.source.remote.RemoteDataSource
-import com.arturmaslov.tgnba.utils.Constants
+import com.arturmaslov.skubaware.utils.Constants
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidApplication

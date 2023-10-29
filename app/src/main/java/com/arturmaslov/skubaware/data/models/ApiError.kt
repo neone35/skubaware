@@ -1,4 +1,4 @@
-package com.arturmaslov.tgnba.data.models
+package com.arturmaslov.skubaware.data.models
 
 import com.google.gson.annotations.SerializedName
 

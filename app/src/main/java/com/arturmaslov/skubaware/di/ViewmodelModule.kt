@@ -1,4 +1,4 @@
-package com.arturmaslov.tgnba.di
+package com.arturmaslov.skubaware.di
 
 import com.arturmaslov.skubaware.viewmodel.BaseVM
 import com.arturmaslov.skubaware.viewmodel.MainVM

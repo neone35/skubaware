@@ -17,9 +17,9 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.arturmaslov.skubaware.R
 import com.arturmaslov.skubaware.data.models.Product
+import com.arturmaslov.skubaware.utils.Constants
 import com.arturmaslov.skubaware.viewmodel.ProductFilterOption
 import com.arturmaslov.skubaware.viewmodel.ProductSortOption
-import com.arturmaslov.tgnba.utils.Constants
 
 @Composable
 fun MainLayout(

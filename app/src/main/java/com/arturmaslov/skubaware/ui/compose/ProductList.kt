@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.arturmaslov.skubaware.R
 import com.arturmaslov.skubaware.data.models.Product
 import com.arturmaslov.skubaware.ui.theme.SkubaWareTheme
-import com.arturmaslov.tgnba.utils.Constants
+import com.arturmaslov.skubaware.utils.Constants
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.components.rememberImageComponent
 import com.skydoves.landscapist.glide.GlideImage

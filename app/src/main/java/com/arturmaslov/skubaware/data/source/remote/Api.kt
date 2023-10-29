@@ -1,6 +1,6 @@
 package com.arturmaslov.skubaware.data.source.remote
 
-import com.arturmaslov.tgnba.data.models.ApiError
+import com.arturmaslov.skubaware.data.models.ApiError
 import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback

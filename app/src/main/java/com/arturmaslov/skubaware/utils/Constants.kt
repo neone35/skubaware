@@ -1,4 +1,4 @@
-package com.arturmaslov.tgnba.utils
+package com.arturmaslov.skubaware.utils
 
 object Constants {
     const val BASE_URL = "https://5281-78-61-244-136.ngrok-free.app/public/"
