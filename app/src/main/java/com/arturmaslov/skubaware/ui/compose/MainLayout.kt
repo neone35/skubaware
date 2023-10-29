@@ -78,7 +78,7 @@ fun MainLayout(
             )
         }
         if (isFilterSortDialogVisible) {
-            SortDialog(
+            FilterSortDialog(
                 onSortOptionSelected = { onSortOptionChanged(it) },
                 onFilterOptionSelected = { option, from, to ->
                     onFilterOptionChanged(option, from, to)

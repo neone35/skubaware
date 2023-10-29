@@ -42,9 +42,9 @@ import com.arturmaslov.tgnba.utils.Constants
 
 @Preview(showBackground = true)
 @Composable
-fun SortDialogPreview() {
+fun FilterSortDialogPreview() {
     SkubaWareTheme {
-        SortDialog(
+        FilterSortDialog(
             onDismiss = {},
             onSortOptionSelected = {},
             currentSortOption = ProductSortOption.BRAND,
@@ -55,7 +55,7 @@ fun SortDialogPreview() {
 }
 
 @Composable
-fun SortDialog(
+fun FilterSortDialog(
     onDismiss: () -> Unit,
     onSortOptionSelected: (ProductSortOption) -> Unit,
     currentSortOption: ProductSortOption,
