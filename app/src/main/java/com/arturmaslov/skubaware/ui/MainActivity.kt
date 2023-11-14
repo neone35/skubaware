@@ -72,7 +72,7 @@ class MainActivity : ComponentActivity(), UiHelper {
                         ) {
                             LoadingScreen(
                                 showLoading =
-                                loadStatus == LoadStatus.LOADING || internetAvailable == false
+                                loadStatus == LoadStatus.LOADING
                             ) {
                                 MainLayout(
                                     initialProductList = initialProductList,
