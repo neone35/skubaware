@@ -71,8 +71,7 @@ class MainActivity : ComponentActivity(), UiHelper {
                             color = MaterialTheme.colorScheme.background
                         ) {
                             LoadingScreen(
-                                showLoading =
-                                loadStatus == LoadStatus.LOADING
+                                showLoading = loadStatus == LoadStatus.LOADING
                             ) {
                                 MainLayout(
                                     initialProductList = initialProductList,

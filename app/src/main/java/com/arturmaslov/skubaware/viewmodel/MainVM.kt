@@ -65,13 +65,13 @@ class MainVM(
         }
     }
 
-    private fun <T> listsEqual(local: List<T>?, remote: List<T>?): Boolean {
+    private fun listsEqual(local: List<Product?>?, remote: List<Product>?): Boolean {
         if (local!!.size != remote!!.size) {
             return false
         }
         local.forEachIndexed { index, value ->
-            if (remote[index] != value) {
-                Timber.d("Value $value at index $index is different")
+            val valueWithNullId = value?.copy(id = null)
+            if (remote[index] != valueWithNullId) {
                 Timber.d("Comparing ${remote[index]} with ${local[index]}")
                 return false
             }
@@ -81,8 +81,8 @@ class MainVM(
 
     fun filterProductLists(
         by: ProductFilterOption,
-        from: String,
-        to: String
+        from: Float,
+        to: Float
     ) {
         Timber.i("Running HomeVM filterProductLists with $by")
         viewModelScope.launch {
@@ -91,11 +91,8 @@ class MainVM(
                 startProductList.value = initialProductList?.filter { product ->
                     when (by) {
                         ProductFilterOption.SKN -> {
-                            val noLetterSkn = product?.skn?.replace(Regex("[A-Za-z]"), "")
-                            val sknInt = noLetterSkn?.toFloat() ?: 0f
-                            val fromInt = from.toFloat()
-                            val toInt = to.toFloat()
-                            sknInt in fromInt..toInt
+                            val skn = product?.skn?.toFloat() ?: 0f
+                            skn in from..to
                         }
 
                         else -> {
@@ -119,20 +116,20 @@ class MainVM(
             try {
                 startProductList.value = startProductList.value?.sortedBy {
                     when (by) {
-                        ProductSortOption.SKN -> it?.skn
-                        ProductSortOption.NAME -> it?.name
-                        ProductSortOption.BRAND -> it?.brand
-                        ProductSortOption.BUYER_CODE -> it?.buyerCode
-                        ProductSortOption.QUANTITY -> it?.quantity
+                        ProductSortOption.SKN -> it?.skn.toString()
+                        ProductSortOption.NAME -> it?.name.toString()
+                        ProductSortOption.BRAND -> it?.brand.toString()
+                        ProductSortOption.BUYER_CODE -> it?.buyerCode.toString()
+                        ProductSortOption.QUANTITY -> it?.quantity.toString()
                     }
                 }
                 finalProductList.value = finalProductList.value?.sortedBy {
                     when (by) {
-                        ProductSortOption.SKN -> it?.skn
-                        ProductSortOption.NAME -> it?.name
-                        ProductSortOption.BRAND -> it?.brand
-                        ProductSortOption.BUYER_CODE -> it?.buyerCode
-                        ProductSortOption.QUANTITY -> it?.quantity
+                        ProductSortOption.SKN -> it?.skn.toString()
+                        ProductSortOption.NAME -> it?.name.toString()
+                        ProductSortOption.BRAND -> it?.brand.toString()
+                        ProductSortOption.BUYER_CODE -> it?.buyerCode.toString()
+                        ProductSortOption.QUANTITY -> it?.quantity.toString()
                     }
                 }
                 productSortOption.value = by

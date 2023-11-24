@@ -59,7 +59,7 @@ fun FilterSortDialog(
     onDismiss: () -> Unit,
     onSortOptionSelected: (ProductSortOption) -> Unit,
     currentSortOption: ProductSortOption,
-    onFilterOptionSelected: (ProductFilterOption, String, String) -> Unit,
+    onFilterOptionSelected: (ProductFilterOption, Float, Float) -> Unit,
     initialProductList: List<Product?>
 ) {
     val productSortOptionList = ProductSortOption.values().toList()
@@ -110,20 +110,14 @@ fun FilterSortDialog(
 @Composable
 fun FilterOptionItem(
     option: ProductFilterOption,
-    onFilterSelected: (ProductFilterOption, String, String) -> Unit,
+    onFilterSelected: (ProductFilterOption, Float, Float) -> Unit,
     initialProductList: List<Product?>
 ) {
     val initialMinValue = initialProductList
-        .minOfOrNull {
-            val noLetterSkn = it?.skn?.replace(Regex("[A-Za-z]"), "")
-            noLetterSkn?.toFloat() ?: 0.0f
-        }
+        .minOfOrNull { it?.skn?.toFloat() ?: 0.0f }
         ?: 0.0f
     val initialMaxValue = initialProductList
-        .maxOfOrNull {
-            val noLetterSkn = it?.skn?.replace(Regex("[A-Za-z]"), "")
-            noLetterSkn?.toFloat() ?: 0.0f
-        }
+        .maxOfOrNull { it?.skn?.toFloat() ?: 0.0f }
         ?: 0.0f
     var slidingRange by remember {
         mutableStateOf(initialMinValue..initialMaxValue)
@@ -144,8 +138,8 @@ fun FilterOptionItem(
                 onValueChangeFinished = {
                     onFilterSelected(
                         option,
-                        slidingRange.start.toString(),
-                        slidingRange.endInclusive.toString()
+                        slidingRange.start,
+                        slidingRange.endInclusive
                     )
                 },
             )

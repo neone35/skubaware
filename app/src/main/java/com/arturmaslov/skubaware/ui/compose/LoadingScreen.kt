@@ -20,19 +20,19 @@ fun LoadingPreview() {
                 listOf(
                     Product(
                         imgUrl = null,
-                        quantity = "2",
-                        skn = "FSDFSDF",
+                        quantity = "1.25",
+                        skn = 9552,
                         brand = "Skulabamba",
                         name = "padangeles",
-                        buyerCode = "484849"
+                        buyerCode = 959595
                     ),
                     Product(
                         imgUrl = null,
-                        quantity = "2",
-                        skn = "FSDFSDF",
+                        quantity = "1.25",
+                        skn = 9552,
                         brand = "Skulabamba",
                         name = "padangeles",
-                        buyerCode = "484849"
+                        buyerCode = 959595
                     )
                 ),
                 onClick = {},

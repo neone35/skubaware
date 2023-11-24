@@ -49,6 +49,5 @@ app workflow instead of creating a diagram in draw.io.
 *This is still project in progress but it already satisfies requirements from 2023.10.28.*
 
 - write use cases
-- separate data models into DTO (remote) and entity (database)
 - rewrite API error handling
 - add more filtering options

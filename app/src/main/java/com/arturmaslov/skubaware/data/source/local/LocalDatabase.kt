@@ -1,12 +1,12 @@
 package com.arturmaslov.skubaware.data.source.local
 
 import androidx.room.*
-import com.arturmaslov.skubaware.data.models.Product
+import com.arturmaslov.skubaware.data.models.ProductEntity
 
 @Database(
     entities = [
-        Product::class,
-    ], version = 3
+        ProductEntity::class,
+    ], version = 6
 )
 @TypeConverters(Converters::class)
 abstract class LocalDatabase : RoomDatabase() {
@@ -16,15 +16,15 @@ abstract class LocalDatabase : RoomDatabase() {
 
 @Dao
 interface ProductDao {
-    @Query("SELECT * FROM product")
-    fun getProducts(): List<Product?>?
+    @Query("SELECT * FROM productEntity")
+    fun getProducts(): List<ProductEntity>?
 
     // returns row id of inserted item
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertProduct(product: Product): Long
+    fun insertProduct(product: ProductEntity): Long
 
     // returns number of rows affected
-    @Query("DELETE FROM product")
+    @Query("DELETE FROM productEntity")
     fun deleteProducts(): Int
 
 }

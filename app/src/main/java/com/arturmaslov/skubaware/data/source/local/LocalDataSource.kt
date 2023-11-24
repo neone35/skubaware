@@ -2,6 +2,8 @@ package com.arturmaslov.skubaware.data.source.local
 
 import androidx.lifecycle.MutableLiveData
 import com.arturmaslov.skubaware.data.models.Product
+import com.arturmaslov.skubaware.data.models.toDomainModel
+import com.arturmaslov.skubaware.data.models.toEntity
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -17,15 +19,16 @@ class LocalDataSource(
     override suspend fun getLocalProducts() =
         withContext(mDispatcher) {
             Timber.i("Running getLocalProducts()")
-            val liveData = MutableLiveData<List<Product?>?>()
+            val liveData = MutableLiveData<List<Product>?>()
             val localProducts = productDao?.getProducts()
+            val domainList = localProducts?.map { it.toDomainModel() }
             if (localProducts != null) {
-                liveData.postValue(localProducts)
+                liveData.postValue(domainList)
                 Timber.i("Success: local products $localProducts retrieved")
             } else {
                 Timber.i("Failure: unable to retrieve local products")
             }
-            liveData.apply { postValue(localProducts) }
+            liveData.apply { postValue(domainList) }
         }
 
 
@@ -43,7 +46,7 @@ class LocalDataSource(
     override suspend fun insertProduct(product: Product): Long? =
         withContext(mDispatcher) {
             Timber.i("Running insertProduct()")
-            val insertedId = productDao?.insertProduct(product)
+            val insertedId = productDao?.insertProduct(product.toEntity())
             if (insertedId != null) {
                 Timber.i("Success: product with id ${product.name} inserted")
             } else {
@@ -55,7 +58,7 @@ class LocalDataSource(
 }
 
 interface LocalData {
-    suspend fun getLocalProducts(): MutableLiveData<List<Product?>?>
+    suspend fun getLocalProducts(): MutableLiveData<List<Product>?>
     suspend fun deleteProducts()
     suspend fun insertProduct(product: Product): Long?
 }

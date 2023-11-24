@@ -45,19 +45,19 @@ fun ProductListPreview() {
             listOf(
                 Product(
                     imgUrl = null,
-                    quantity = "2",
-                    skn = "FSDFSDF",
+                    quantity = "1.25",
+                    skn = 9552,
                     brand = "Skulabamba",
                     name = "padangeles",
-                    buyerCode = "484849"
+                    buyerCode = 959595
                 ),
                 Product(
                     imgUrl = null,
-                    quantity = "2",
-                    skn = "FSDFSDF",
+                    quantity = "1.25",
+                    skn = 9552,
                     brand = "Skulabamba",
                     name = "padangeles",
-                    buyerCode = "484849"
+                    buyerCode = 959595
                 )
             ),
             onClick = {},
@@ -179,12 +179,8 @@ fun MainDataColumn(
 fun IdentifierRow(
     product: Product?
 ) {
-    val skn =
-        if (product?.skn?.isNotEmpty() == true)
-            ("SKN#" + product.skn) else Constants.EMPTY_STRING
-    val buyerCode =
-        if (product?.buyerCode?.isNotEmpty() == true)
-            ("BC#" + product.buyerCode) else Constants.EMPTY_STRING
+    val skn = "SKN#" + product?.skn
+    val buyerCode = "BC#" + product?.buyerCode
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
         verticalAlignment = Alignment.Top
@@ -214,7 +210,7 @@ fun AmountWithIconRow(
         modifier = modifier
     ) {
         Text(
-            text = product?.quantity ?: Constants.EMPTY_STRING,
+            text = product?.quantity.toString(),
             style = MaterialTheme.typography.labelLarge,
         )
         Image(

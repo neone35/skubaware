@@ -3,6 +3,8 @@ package com.arturmaslov.skubaware.data.source.remote
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.arturmaslov.skubaware.data.models.Product
+import com.arturmaslov.skubaware.data.models.ProductDto
+import com.arturmaslov.skubaware.data.models.toDomainModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import retrofit2.Call
@@ -40,9 +42,10 @@ class RemoteDataSource(
             val liveData = MutableLiveData<List<Product>?>()
             val call = api.apiService.fetchProductResponse()
             val name = object {}.javaClass.enclosingMethod?.name
-            val resultData: List<Product>? = checkCallAndReturn(call, name!!)
-            liveData.postValue(resultData)
-            liveData.apply { postValue(resultData) }
+            val resultData: List<ProductDto>? = checkCallAndReturn(call, name!!)
+            val domainList = resultData?.map { it.toDomainModel() }
+            liveData.postValue(domainList)
+            liveData.apply { postValue(domainList) }
         }
 
 }

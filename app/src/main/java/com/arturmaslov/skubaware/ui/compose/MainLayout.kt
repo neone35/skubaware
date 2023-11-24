@@ -33,7 +33,7 @@ fun MainLayout(
     onSortOptionChanged: (ProductSortOption) -> Unit,
     onFilterSortDialogDismiss: () -> Unit,
     currentSortOption: ProductSortOption,
-    onFilterOptionChanged: (ProductFilterOption, String, String) -> Unit
+    onFilterOptionChanged: (ProductFilterOption, Float, Float) -> Unit
 ) {
     val context = LocalContext.current
 

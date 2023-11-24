@@ -21,7 +21,7 @@ class MainRepository(
         Timber.d("Injection MainRepository")
     }
 
-    override suspend fun getLocalProducts(): MutableLiveData<List<Product?>?> {
+    override suspend fun getLocalProducts(): MutableLiveData<List<Product>?> {
         return mLocalDataSource.getLocalProducts()
     }
 
