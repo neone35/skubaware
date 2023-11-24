@@ -40,7 +40,7 @@ class MainVM(
                 } else {
                     val remoteProducts = mainRepo.fetchProductResponse().value
                     // do not update local DB if remote data is the same
-                    if (!isEqual(localProducts, remoteProducts)) {
+                    if (!listsEqual(localProducts, remoteProducts)) {
                         val rowIds: MutableList<Int> = mutableListOf()
                         mainRepo.deleteProducts()
                         remoteProducts?.forEach {
@@ -65,12 +65,14 @@ class MainVM(
         }
     }
 
-    private fun <T> isEqual(first: List<T>?, second: List<T>?): Boolean {
-        if (first!!.size != second!!.size) {
+    private fun <T> listsEqual(local: List<T>?, remote: List<T>?): Boolean {
+        if (local!!.size != remote!!.size) {
             return false
         }
-        first.forEachIndexed { index, value ->
-            if (second[index] != value) {
+        local.forEachIndexed { index, value ->
+            if (remote[index] != value) {
+                Timber.d("Value $value at index $index is different")
+                Timber.d("Comparing ${remote[index]} with ${local[index]}")
                 return false
             }
         }
