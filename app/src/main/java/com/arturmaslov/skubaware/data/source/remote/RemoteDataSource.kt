@@ -32,16 +32,17 @@ class RemoteDataSource(
                 is Result.ApiFailure -> remoteResponse.tryEmit(result.errorString)
                 is Result.Loading -> Timber.d("$funcName is loading")
             }
-            return@withContext resultData
+            resultData
         }
 
-    override suspend fun fetchProductResponse(): List<Product>? {
-        Timber.i("Running fetchProductResponse()")
-        val call = api.apiService.fetchProductResponse()
-        val name = object {}.javaClass.enclosingMethod?.name
-        val resultData: List<ProductDto>? = checkCallAndReturn(call, name!!)
-        return resultData?.map { it.toDomainModel() }
-    }
+    override suspend fun fetchProductResponse() =
+        withContext(mDispatcher) {
+            Timber.i("Running fetchProductResponse()")
+            val call = api.apiService.fetchProductResponse()
+            val name = object {}.javaClass.enclosingMethod?.name
+            val resultData: List<ProductDto>? = checkCallAndReturn(call, name!!)
+            resultData?.map { it.toDomainModel() }
+        }
 
 }
 

@@ -25,7 +25,7 @@ class LocalDataSource(
             } else {
                 Timber.i("Failure: unable to retrieve local products")
             }
-            return@withContext productList
+            productList
         }
 
 
@@ -49,7 +49,7 @@ class LocalDataSource(
             } else {
                 Timber.i("Failure: unable to delete local product")
             }
-            return@withContext insertedId
+            insertedId
         }
 
 }
