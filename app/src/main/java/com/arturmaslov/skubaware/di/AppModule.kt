@@ -4,8 +4,8 @@ import android.content.Context
 import com.arturmaslov.skubaware.BuildConfig
 import com.arturmaslov.skubaware.data.source.remote.Api
 import com.arturmaslov.skubaware.data.source.remote.ApiService
-import com.arturmaslov.skubaware.utils.Constants
-import com.arturmaslov.skubaware.utils.NetworkChecker
+import com.arturmaslov.skubaware.helpers.utils.Constants
+import com.arturmaslov.skubaware.helpers.utils.NetworkChecker
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidContext

@@ -1,38 +1,40 @@
 package com.arturmaslov.skubaware.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arturmaslov.skubaware.data.source.MainRepository
 import com.arturmaslov.skubaware.data.source.remote.LoadStatus
-import com.arturmaslov.skubaware.utils.NetworkChecker
+import com.arturmaslov.skubaware.helpers.utils.NetworkChecker
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 open class BaseVM(
-    private val mainRepo: MainRepository,
+    mainRepo: MainRepository,
     private val app: Application
 ) : ViewModel() {
 
-    val remoteResponse: LiveData<String?> get() = mainRepo.remoteResponse
+    val remoteResponse = mainRepo.remoteResponse as SharedFlow<String?>
 
-    private val internetIsAvailable = MutableLiveData(false)
-    private val loadStatus = MutableLiveData<LoadStatus>()
+    private val internetIsAvailable = MutableStateFlow(true)
+    private val loadStatus = MutableStateFlow(LoadStatus.LOADING)
 
     init {
         // runs every time VM is created (not view created)
         viewModelScope.launch {
-            loadStatus.value = LoadStatus.LOADING
+            loadStatus.emit(LoadStatus.LOADING)
             internetIsAvailable.value = NetworkChecker(app).isNetworkConnected()
-            loadStatus.value = LoadStatus.DONE
+            loadStatus.emit(LoadStatus.DONE)
         }
     }
 
     fun setLoadStatus(status: LoadStatus) {
-        Timber.i("Running BaseVM setBaseStatus with $status")
-        loadStatus.value = status
+        viewModelScope.launch {
+            Timber.i("Running BaseVM setBaseStatus with $status")
+            loadStatus.emit(status)
+        }
     }
 
     fun internetIsAvailable() = internetIsAvailable

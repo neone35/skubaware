@@ -1,11 +1,12 @@
 package com.arturmaslov.skubaware.data.source.remote
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.arturmaslov.skubaware.data.models.Product
 import com.arturmaslov.skubaware.data.models.ProductDto
 import com.arturmaslov.skubaware.data.models.toDomainModel
+import com.arturmaslov.skubaware.helpers.extensions.BehaviorFlow
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.withContext
 import retrofit2.Call
 import timber.log.Timber
@@ -16,8 +17,7 @@ class RemoteDataSource(
 ) : RemoteData {
 
     // watched from main thread for toast messages
-    private val _remoteResponse = MutableLiveData<String?>()
-    override val remoteResponse: LiveData<String?> get() = _remoteResponse
+    override val remoteResponse = BehaviorFlow<String?>()
 
     private suspend fun <T : Any> checkCallAndReturn(call: Call<T>, funcName: String): T? =
         withContext(mDispatcher) {
@@ -25,12 +25,12 @@ class RemoteDataSource(
             var resultData: T? = null
             when (val result = api.getResult(call)) {
                 is Result.Success -> {
-                    Timber.d("Success: remote data retrieved")
+                    remoteResponse.tryEmit("Success: remote data retrieved")
                     resultData = result.data
                 }
 
-                is Result.NetworkFailure -> _remoteResponse.postValue(result.error.toString())
-                is Result.ApiFailure -> _remoteResponse.postValue(result.errorString)
+                is Result.NetworkFailure -> remoteResponse.tryEmit(result.error.toString())
+                is Result.ApiFailure -> remoteResponse.tryEmit(result.errorString)
                 is Result.Loading -> Timber.d("$funcName is loading")
             }
             return@withContext resultData
@@ -51,6 +51,6 @@ class RemoteDataSource(
 }
 
 interface RemoteData {
-    val remoteResponse: LiveData<String?>
+    val remoteResponse: MutableSharedFlow<String?>
     suspend fun fetchProductResponse(): MutableLiveData<List<Product>?>
 }

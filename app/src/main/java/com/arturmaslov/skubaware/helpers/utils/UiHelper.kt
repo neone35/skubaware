@@ -1,4 +1,4 @@
-package com.arturmaslov.skubaware.utils
+package com.arturmaslov.skubaware.helpers.utils
 
 interface UiHelper {
     fun setListeners()

@@ -34,7 +34,9 @@ class MainVM(
             try {
                 val localProducts = mainRepo.getLocalProducts().value
                 // show local data without internet
-                if (internetIsAvailable().value == false && !localProducts.isNullOrEmpty()) {
+                val internetIsAvailable = internetIsAvailable().value
+                val localDataExists = !localProducts.isNullOrEmpty()
+                if (!internetIsAvailable && localDataExists) {
                     initialProductList = localProducts
                     startProductList.value = localProducts
                 } else {

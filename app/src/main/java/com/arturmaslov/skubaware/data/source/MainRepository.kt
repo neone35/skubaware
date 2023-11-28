@@ -1,6 +1,5 @@
 package com.arturmaslov.skubaware.data.source
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.arturmaslov.skubaware.data.models.Product
 import com.arturmaslov.skubaware.data.source.local.LocalData
@@ -15,7 +14,7 @@ class MainRepository(
 ) : LocalData, RemoteData {
 
     // watched from main thread for toast messages
-    override val remoteResponse: LiveData<String?> get() = mRemoteDataSource.remoteResponse
+    override val remoteResponse = mRemoteDataSource.remoteResponse
 
     init {
         Timber.d("Injection MainRepository")

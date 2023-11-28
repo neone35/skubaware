@@ -1,4 +1,4 @@
-package com.arturmaslov.skubaware.utils
+package com.arturmaslov.skubaware.helpers.utils
 
 import android.content.ContentValues
 import android.net.Uri

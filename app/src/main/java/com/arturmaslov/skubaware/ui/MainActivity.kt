@@ -10,24 +10,28 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.lifecycleScope
 import com.arturmaslov.skubaware.R
 import com.arturmaslov.skubaware.data.models.Product
 import com.arturmaslov.skubaware.data.source.remote.LoadStatus
+import com.arturmaslov.skubaware.helpers.utils.HelperUtils
+import com.arturmaslov.skubaware.helpers.utils.ToastUtils
+import com.arturmaslov.skubaware.helpers.utils.UiHelper
 import com.arturmaslov.skubaware.ui.compose.LoadingScreen
 import com.arturmaslov.skubaware.ui.compose.MainLayout
 import com.arturmaslov.skubaware.ui.compose.SkubaTopAppBar
 import com.arturmaslov.skubaware.ui.theme.SkubaWareTheme
-import com.arturmaslov.skubaware.utils.HelperUtils
-import com.arturmaslov.skubaware.utils.ToastUtils
-import com.arturmaslov.skubaware.utils.UiHelper
 import com.arturmaslov.skubaware.viewmodel.MainVM
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -44,11 +48,7 @@ class MainActivity : ComponentActivity(), UiHelper {
 
 
         setContent {
-            val internetAvailable = mainVM.internetIsAvailable().observeAsState().value
-            internetAvailable?.let {
-                if (!it) ToastUtils.updateLong(this, getString(R.string.no_internet))
-            }
-            val loadStatus = mainVM.loadStatus().observeAsState().value
+            val loadStatus = mainVM.loadStatus().collectAsState().value
 
             val initialProductList = mainVM.initialProductList() ?: emptyList()
             val startProductList =
@@ -114,8 +114,9 @@ class MainActivity : ComponentActivity(), UiHelper {
     }
 
     override fun setObservers() {
-        observeLoadStatus(mainVM.loadStatus())
-        observeRepositoryResponse(mainVM.remoteResponse)
+        lifecycleScope.launch { observeInternetAvailability(mainVM.internetIsAvailable()) }
+        lifecycleScope.launch { observeLoadStatusToDisableBack(mainVM.loadStatus()) }
+        lifecycleScope.launch { observeRepositoryResponse(mainVM.remoteResponse) }
     }
 
     override fun setListeners() {
@@ -128,8 +129,14 @@ class MainActivity : ComponentActivity(), UiHelper {
         onBackPressedDispatcher.addCallback(this, disableBackCallback as OnBackPressedCallback)
     }
 
-    private fun observeLoadStatus(statusLD: LiveData<LoadStatus>) {
-        statusLD.observe(this) {
+    private suspend fun observeInternetAvailability(statusFlow: StateFlow<Boolean>) {
+        statusFlow.collect {
+            if (!it) ToastUtils.updateLong(this, getString(R.string.no_internet))
+        }
+    }
+
+    private suspend fun observeLoadStatusToDisableBack(statusFlow: StateFlow<LoadStatus>) {
+        statusFlow.collect {
             Timber.d("api status is $it")
             when (it) {
                 LoadStatus.LOADING -> {
@@ -144,19 +151,13 @@ class MainActivity : ComponentActivity(), UiHelper {
                     Timber.e("Failure: $it")
                     disableBackCallback?.isEnabled = false
                 }
-
-                else -> {
-                    disableBackCallback?.isEnabled = false
-                }
             }
         }
     }
 
-    private fun observeRepositoryResponse(repoResponseLD: LiveData<String?>) {
-        if (!repoResponseLD.hasObservers()) {
-            repoResponseLD.observe(this) {
-                Timber.i("observeRepositoryResponse: $it")
-            }
+    private suspend fun observeRepositoryResponse(repoResponseFlow: SharedFlow<String?>) {
+        repoResponseFlow.collect {
+            Timber.i("observeRepositoryResponse: $it")
         }
     }
 

@@ -1,4 +1,4 @@
-package com.arturmaslov.skubaware.utils
+package com.arturmaslov.skubaware.helpers.utils
 
 object Constants {
     const val BASE_URL = "https://master-ethical-man.ngrok-free.app/public/"

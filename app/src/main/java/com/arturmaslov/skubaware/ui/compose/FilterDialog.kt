@@ -35,8 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.arturmaslov.skubaware.R
 import com.arturmaslov.skubaware.data.models.Product
+import com.arturmaslov.skubaware.helpers.utils.Constants
 import com.arturmaslov.skubaware.ui.theme.SkubaWareTheme
-import com.arturmaslov.skubaware.utils.Constants
 import com.arturmaslov.skubaware.viewmodel.ProductFilterOption
 import com.arturmaslov.skubaware.viewmodel.ProductSortOption
 

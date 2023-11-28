@@ -22,8 +22,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.arturmaslov.skubaware.R
+import com.arturmaslov.skubaware.helpers.utils.Constants
 import com.arturmaslov.skubaware.ui.theme.SkubaWareTheme
-import com.arturmaslov.skubaware.utils.Constants
 
 @Preview(showBackground = true)
 @Composable
