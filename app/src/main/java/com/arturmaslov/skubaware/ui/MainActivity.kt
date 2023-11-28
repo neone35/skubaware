@@ -12,7 +12,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -52,11 +51,11 @@ class MainActivity : ComponentActivity(), UiHelper {
 
             val initialProductList = mainVM.initialProductList() ?: emptyList()
             val startProductList =
-                mainVM.startProductList().observeAsState().value ?: emptyList()
-            val finalProductList = mainVM.finalProductList().observeAsState().value ?: emptyList()
+                mainVM.startProductList().collectAsState().value ?: emptyList()
+            val finalProductList = mainVM.finalProductList().collectAsState().value ?: emptyList()
 
             var isFilterSortDialogVisible by remember { mutableStateOf(false) }
-            val productSortOption = mainVM.productSortOption().observeAsState().value!!
+            val productSortOption = mainVM.productSortOption().collectAsState().value
 
             SkubaWareTheme {
                 Scaffold(

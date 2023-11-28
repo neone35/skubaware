@@ -1,13 +1,13 @@
 package com.arturmaslov.skubaware.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.arturmaslov.skubaware.App
 import com.arturmaslov.skubaware.R
 import com.arturmaslov.skubaware.data.models.Product
 import com.arturmaslov.skubaware.data.source.MainRepository
 import com.arturmaslov.skubaware.data.source.remote.LoadStatus
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -17,9 +17,9 @@ class MainVM(
 ) : BaseVM(mainRepo, app) {
 
     private var initialProductList: List<Product?>? = emptyList()
-    private val startProductList = MutableLiveData<List<Product?>?>(emptyList())
-    private val finalProductList = MutableLiveData<List<Product?>?>(emptyList())
-    private val productSortOption = MutableLiveData(ProductSortOption.BRAND)
+    private val startProductList = MutableStateFlow<List<Product?>?>(emptyList())
+    private val finalProductList = MutableStateFlow<List<Product?>?>(emptyList())
+    private val productSortOption = MutableStateFlow(ProductSortOption.BRAND)
 
     init {
         // runs every time VM is created (not view created)
@@ -32,7 +32,7 @@ class MainVM(
         viewModelScope.launch {
             setLoadStatus(LoadStatus.LOADING)
             try {
-                val localProducts = mainRepo.getLocalProducts().value
+                val localProducts = mainRepo.getLocalProducts()
                 // show local data without internet
                 val internetIsAvailable = internetIsAvailable().value
                 val localDataExists = !localProducts.isNullOrEmpty()
@@ -40,7 +40,7 @@ class MainVM(
                     initialProductList = localProducts
                     startProductList.value = localProducts
                 } else {
-                    val remoteProducts = mainRepo.fetchProductResponse().value
+                    val remoteProducts = mainRepo.fetchProductResponse()
                     // do not update local DB if remote data is the same
                     if (!listsEqual(localProducts, remoteProducts)) {
                         val rowIds: MutableList<Int> = mutableListOf()
@@ -50,15 +50,15 @@ class MainVM(
                                 ?.let { rowId -> rowIds.add(rowId.toInt()) }
                         }
                         Timber.d("$rowIds ids inserted into database")
-                        initialProductList = mainRepo.getLocalProducts().value
-                        startProductList.value = mainRepo.getLocalProducts().value
+                        initialProductList = mainRepo.getLocalProducts()
+                        startProductList.value = mainRepo.getLocalProducts()
                     } else {
                         Timber.i("MainVM productList local==remote")
                         initialProductList = localProducts
                         startProductList.value = localProducts
                     }
                 }
-                sortProductLists(productSortOption.value!!)
+                sortProductLists(productSortOption.value)
                 setLoadStatus(LoadStatus.DONE)
             } catch (e: Exception) {
                 setLoadStatus(LoadStatus.ERROR)
@@ -102,7 +102,7 @@ class MainVM(
                         }
                     }
                 }
-                sortProductLists(productSortOption.value!!)
+                sortProductLists(productSortOption.value)
                 setLoadStatus(LoadStatus.DONE)
             } catch (e: Exception) {
                 setLoadStatus(LoadStatus.ERROR)
@@ -156,7 +156,7 @@ class MainVM(
         tempFinalProductList?.add(product)
         finalProductList.value = tempFinalProductList
 
-        sortProductLists(productSortOption.value!!)
+        sortProductLists(productSortOption.value)
     }
 
     fun transferToStartList(product: Product) {
@@ -172,7 +172,7 @@ class MainVM(
         tempStartProductList?.add(product)
         startProductList.value = tempStartProductList
 
-        sortProductLists(productSortOption.value!!)
+        sortProductLists(productSortOption.value)
     }
 
     fun initialProductList() = initialProductList

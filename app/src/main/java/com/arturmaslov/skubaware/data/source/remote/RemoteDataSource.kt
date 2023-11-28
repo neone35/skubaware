@@ -1,6 +1,5 @@
 package com.arturmaslov.skubaware.data.source.remote
 
-import androidx.lifecycle.MutableLiveData
 import com.arturmaslov.skubaware.data.models.Product
 import com.arturmaslov.skubaware.data.models.ProductDto
 import com.arturmaslov.skubaware.data.models.toDomainModel
@@ -36,21 +35,17 @@ class RemoteDataSource(
             return@withContext resultData
         }
 
-    override suspend fun fetchProductResponse() =
-        withContext(mDispatcher) {
-            Timber.i("Running fetchProductResponse()")
-            val liveData = MutableLiveData<List<Product>?>()
-            val call = api.apiService.fetchProductResponse()
-            val name = object {}.javaClass.enclosingMethod?.name
-            val resultData: List<ProductDto>? = checkCallAndReturn(call, name!!)
-            val domainList = resultData?.map { it.toDomainModel() }
-            liveData.postValue(domainList)
-            liveData.apply { postValue(domainList) }
-        }
+    override suspend fun fetchProductResponse(): List<Product>? {
+        Timber.i("Running fetchProductResponse()")
+        val call = api.apiService.fetchProductResponse()
+        val name = object {}.javaClass.enclosingMethod?.name
+        val resultData: List<ProductDto>? = checkCallAndReturn(call, name!!)
+        return resultData?.map { it.toDomainModel() }
+    }
 
 }
 
 interface RemoteData {
     val remoteResponse: MutableSharedFlow<String?>
-    suspend fun fetchProductResponse(): MutableLiveData<List<Product>?>
+    suspend fun fetchProductResponse(): List<Product>?
 }

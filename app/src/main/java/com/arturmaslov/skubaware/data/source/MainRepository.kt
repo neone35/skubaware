@@ -1,6 +1,5 @@
 package com.arturmaslov.skubaware.data.source
 
-import androidx.lifecycle.MutableLiveData
 import com.arturmaslov.skubaware.data.models.Product
 import com.arturmaslov.skubaware.data.source.local.LocalData
 import com.arturmaslov.skubaware.data.source.local.LocalDataSource
@@ -20,7 +19,7 @@ class MainRepository(
         Timber.d("Injection MainRepository")
     }
 
-    override suspend fun getLocalProducts(): MutableLiveData<List<Product>?> {
+    override suspend fun getLocalProducts(): List<Product>? {
         return mLocalDataSource.getLocalProducts()
     }
 
@@ -32,7 +31,7 @@ class MainRepository(
         return mLocalDataSource.insertProduct(product)
     }
 
-    override suspend fun fetchProductResponse(): MutableLiveData<List<Product>?> {
+    override suspend fun fetchProductResponse(): List<Product>? {
         return mRemoteDataSource.fetchProductResponse()
     }
 
