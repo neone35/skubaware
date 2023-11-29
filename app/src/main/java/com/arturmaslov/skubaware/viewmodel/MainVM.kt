@@ -7,13 +7,15 @@ import com.arturmaslov.skubaware.R
 import com.arturmaslov.skubaware.data.models.Product
 import com.arturmaslov.skubaware.data.source.MainRepository
 import com.arturmaslov.skubaware.data.source.remote.LoadStatus
+import com.arturmaslov.skubaware.data.usecase.UpdateLocalWithRemoteUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class MainVM(
     private val mainRepo: MainRepository,
-    app: Application
+    app: Application,
+    private val updateLocalWithRemoteUseCase: UpdateLocalWithRemoteUseCase
 ) : BaseVM(mainRepo, app) {
 
     private var initialProductList: List<Product?>? = emptyList()
@@ -40,23 +42,9 @@ class MainVM(
                     initialProductList = localProducts
                     startProductList.value = localProducts
                 } else {
-                    val remoteProducts = mainRepo.fetchProductResponse()
-                    // do not update local DB if remote data is the same
-                    if (!listsEqual(localProducts, remoteProducts)) {
-                        val rowIds: MutableList<Int> = mutableListOf()
-                        mainRepo.deleteProducts()
-                        remoteProducts?.forEach {
-                            it.let { product -> mainRepo.insertProduct(product) }
-                                ?.let { rowId -> rowIds.add(rowId.toInt()) }
-                        }
-                        Timber.d("$rowIds ids inserted into database")
-                        initialProductList = mainRepo.getLocalProducts()
-                        startProductList.value = mainRepo.getLocalProducts()
-                    } else {
-                        Timber.i("MainVM productList local==remote")
-                        initialProductList = localProducts
-                        startProductList.value = localProducts
-                    }
+                    val productList = updateLocalWithRemoteUseCase.execute(localProducts)
+                    initialProductList = productList
+                    startProductList.value = productList
                 }
                 sortProductLists(productSortOption.value)
                 setLoadStatus(LoadStatus.DONE)
@@ -65,20 +53,6 @@ class MainVM(
                 Timber.e(e.localizedMessage!!)
             }
         }
-    }
-
-    private fun listsEqual(local: List<Product?>?, remote: List<Product>?): Boolean {
-        if (local!!.size != remote!!.size) {
-            return false
-        }
-        local.forEachIndexed { index, value ->
-            val valueWithNullId = value?.copy(id = null)
-            if (remote[index] != valueWithNullId) {
-                Timber.d("Comparing ${remote[index]} with ${local[index]}")
-                return false
-            }
-        }
-        return true
     }
 
     fun filterProductLists(

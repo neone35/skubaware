@@ -45,7 +45,6 @@ class MainActivity : ComponentActivity(), UiHelper {
         setObservers()
         setListeners()
 
-
         setContent {
             val loadStatus = mainVM.loadStatus().collectAsState().value
 

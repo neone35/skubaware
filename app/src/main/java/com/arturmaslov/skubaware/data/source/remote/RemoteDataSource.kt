@@ -3,7 +3,7 @@ package com.arturmaslov.skubaware.data.source.remote
 import com.arturmaslov.skubaware.data.models.Product
 import com.arturmaslov.skubaware.data.models.ProductDto
 import com.arturmaslov.skubaware.data.models.toDomainModel
-import com.arturmaslov.skubaware.helpers.extensions.BehaviorFlow
+import com.arturmaslov.skubaware.helpers.extensions.PublishFlow
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.withContext
@@ -16,7 +16,7 @@ class RemoteDataSource(
 ) : RemoteData {
 
     // watched from main thread for toast messages
-    override val remoteResponse = BehaviorFlow<String?>()
+    override val remoteResponse = PublishFlow<String?>()
 
     private suspend fun <T : Any> checkCallAndReturn(call: Call<T>, funcName: String): T? =
         withContext(mDispatcher) {
@@ -27,7 +27,6 @@ class RemoteDataSource(
                     remoteResponse.tryEmit("Success: remote data retrieved")
                     resultData = result.data
                 }
-
                 is Result.NetworkFailure -> remoteResponse.tryEmit(result.error.toString())
                 is Result.ApiFailure -> remoteResponse.tryEmit(result.errorString)
                 is Result.Loading -> Timber.d("$funcName is loading")
@@ -35,7 +34,7 @@ class RemoteDataSource(
             resultData
         }
 
-    override suspend fun fetchProductResponse() =
+    override suspend fun fetchProductResponse(): List<Product>? =
         withContext(mDispatcher) {
             Timber.i("Running fetchProductResponse()")
             val call = api.apiService.fetchProductResponse()

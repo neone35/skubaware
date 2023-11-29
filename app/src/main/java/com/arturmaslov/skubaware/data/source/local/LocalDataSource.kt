@@ -45,7 +45,7 @@ class LocalDataSource(
             Timber.i("Running insertProduct()")
             val insertedId = productDao?.insertProduct(product.toEntity())
             if (insertedId != null) {
-                Timber.i("Success: product with id ${product.name} inserted")
+                Timber.i("Success: product with id ${product.id} inserted")
             } else {
                 Timber.i("Failure: unable to delete local product")
             }

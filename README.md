@@ -48,6 +48,5 @@ app workflow instead of creating a diagram in draw.io.
 
 *This is still project in progress but it already satisfies requirements from 2023.10.28.*
 
-- write use cases
 - rewrite API error handling
 - add more filtering options

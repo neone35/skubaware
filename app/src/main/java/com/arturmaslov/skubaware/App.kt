@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import com.arturmaslov.skubaware.di.appModule
 import com.arturmaslov.skubaware.di.repoModule
+import com.arturmaslov.skubaware.di.useCaseModule
 import com.arturmaslov.skubaware.di.viewModelModule
 import com.facebook.stetho.Stetho
 import org.koin.android.ext.koin.androidContext
@@ -27,7 +28,14 @@ class App : Application() {
             // Reference Android context
             androidContext(this@App)
             // Load modules
-            modules(listOf(appModule, repoModule, viewModelModule))
+            modules(
+                listOf(
+                    appModule,
+                    repoModule,
+                    useCaseModule,
+                    viewModelModule
+                )
+            )
         }
     }
 
