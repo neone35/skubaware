@@ -50,3 +50,4 @@ app workflow instead of creating a diagram in draw.io.
 
 - rewrite API error handling
 - add more filtering options
+- put names and versions of gradle dependencies into objects
