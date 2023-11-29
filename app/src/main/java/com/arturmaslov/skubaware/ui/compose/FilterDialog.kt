@@ -7,11 +7,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -74,7 +72,7 @@ fun FilterSortDialog(
         ) {
             Column(
                 modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top)
+                verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Top)
             ) {
                 Text(
                     text = stringResource(R.string.sort_by),
@@ -93,8 +91,10 @@ fun FilterSortDialog(
                     text = stringResource(R.string.filter_by),
                     style = MaterialTheme.typography.titleSmall
                 )
-                LazyColumn {
-                    itemsIndexed(productFilterOptionList) { index, option ->
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top)
+                ) {
+                    productFilterOptionList.forEach { option ->
                         FilterOptionItem(
                             option,
                             onFilterOptionSelected,
@@ -113,17 +113,45 @@ fun FilterOptionItem(
     onFilterSelected: (ProductFilterOption, Float, Float) -> Unit,
     initialProductList: List<Product?>
 ) {
-    val initialMinValue = initialProductList
-        .minOfOrNull { it?.skn?.toFloat() ?: 0.0f }
-        ?: 0.0f
-    val initialMaxValue = initialProductList
-        .maxOfOrNull { it?.skn?.toFloat() ?: 0.0f }
-        ?: 0.0f
-    var slidingRange by remember {
-        mutableStateOf(initialMinValue..initialMaxValue)
-    }
+    var initialMinValue = 0f
+    var initialMaxValue = 0f
+
     when (option) {
         ProductFilterOption.SKN -> {
+            initialMinValue = initialProductList
+                .minOfOrNull { it?.skn?.toFloat() ?: 0.0f }
+                ?: 0.0f
+            initialMaxValue = initialProductList
+                .maxOfOrNull { it?.skn?.toFloat() ?: 0.0f }
+                ?: 0.0f
+        }
+
+        ProductFilterOption.BUYER_CODE -> {
+            initialMinValue = initialProductList
+                .minOfOrNull { it?.buyerCode?.toFloat() ?: 0.0f }
+                ?: 0.0f
+            initialMaxValue = initialProductList
+                .maxOfOrNull { it?.buyerCode?.toFloat() ?: 0.0f }
+                ?: 0.0f
+        }
+
+        ProductFilterOption.QUANTITY -> {
+            initialMinValue = initialProductList
+                .minOfOrNull { it?.quantity?.toFloat() ?: 0.0f }
+                ?: 0.0f
+            initialMaxValue = initialProductList
+                .maxOfOrNull { it?.quantity?.toFloat() ?: 0.0f }
+                ?: 0.0f
+        }
+
+        else -> {}
+    }
+
+    when (option) {
+        ProductFilterOption.SKN, ProductFilterOption.BUYER_CODE, ProductFilterOption.QUANTITY -> {
+            var slidingRange by remember {
+                mutableStateOf(initialMinValue..initialMaxValue)
+            }
             Text(
                 text = option.filterOption,
                 style = MaterialTheme.typography.labelMedium

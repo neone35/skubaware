@@ -67,8 +67,18 @@ class MainVM(
                 startProductList.value = initialProductList?.filter { product ->
                     when (by) {
                         ProductFilterOption.SKN -> {
-                            val skn = product?.skn?.toFloat() ?: 0f
-                            skn in from..to
+                            val sknFloat = product?.skn?.toFloat() ?: 0f
+                            sknFloat in from..to
+                        }
+
+                        ProductFilterOption.BUYER_CODE -> {
+                            val buyerCodeFloat = product?.buyerCode?.toFloat() ?: 0f
+                            buyerCodeFloat in from..to
+                        }
+
+                        ProductFilterOption.QUANTITY -> {
+                            val buyerCodeFloat = product?.quantity?.toFloat() ?: 0f
+                            buyerCodeFloat in from..to
                         }
 
                         else -> {
@@ -93,19 +103,19 @@ class MainVM(
                 startProductList.value = startProductList.value?.sortedBy {
                     when (by) {
                         ProductSortOption.SKN -> it?.skn.toString()
-                        ProductSortOption.NAME -> it?.name.toString()
-                        ProductSortOption.BRAND -> it?.brand.toString()
+                        ProductSortOption.NAME -> it?.name
+                        ProductSortOption.BRAND -> it?.brand
                         ProductSortOption.BUYER_CODE -> it?.buyerCode.toString()
-                        ProductSortOption.QUANTITY -> it?.quantity.toString()
+                        ProductSortOption.QUANTITY -> it?.quantity
                     }
                 }
                 finalProductList.value = finalProductList.value?.sortedBy {
                     when (by) {
                         ProductSortOption.SKN -> it?.skn.toString()
-                        ProductSortOption.NAME -> it?.name.toString()
-                        ProductSortOption.BRAND -> it?.brand.toString()
+                        ProductSortOption.NAME -> it?.name
+                        ProductSortOption.BRAND -> it?.brand
                         ProductSortOption.BUYER_CODE -> it?.buyerCode.toString()
-                        ProductSortOption.QUANTITY -> it?.quantity.toString()
+                        ProductSortOption.QUANTITY -> it?.quantity
                     }
                 }
                 productSortOption.value = by
