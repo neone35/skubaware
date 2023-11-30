@@ -57,8 +57,9 @@ class MainVM(
 
     fun filterProductLists(
         by: ProductFilterOption,
-        from: Float,
-        to: Float
+        from: Float = 0f,
+        to: Float = 0f,
+        optionName: String? = null
     ) {
         Timber.i("Running HomeVM filterProductLists with $by")
         viewModelScope.launch {
@@ -81,8 +82,12 @@ class MainVM(
                             buyerCodeFloat in from..to
                         }
 
-                        else -> {
-                            false
+                        ProductFilterOption.NAME -> {
+                            product?.name == optionName
+                        }
+
+                        ProductFilterOption.BRAND -> {
+                            product?.brand == optionName
                         }
                     }
                 }

@@ -6,6 +6,7 @@ import android.provider.MediaStore
 import com.arturmaslov.skubaware.App
 import com.arturmaslov.skubaware.data.models.Product
 import com.google.gson.Gson
+import timber.log.Timber
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -42,5 +43,19 @@ object HelperUtils {
         }
 
         return uri
+    }
+
+    fun compareProductLists(local: List<Product?>?, remote: List<Product>?): Boolean {
+        if (local!!.size != remote!!.size) {
+            return false
+        }
+        local.forEachIndexed { index, localValue ->
+            val valueWithNullId = localValue?.copy(id = null)
+            if (remote[index] != valueWithNullId) {
+                Timber.d("Comparing ${remote[index]} with ${local[index]}")
+                return false
+            }
+        }
+        return true
     }
 }

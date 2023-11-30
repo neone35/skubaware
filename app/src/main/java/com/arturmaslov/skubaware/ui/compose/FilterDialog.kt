@@ -1,11 +1,17 @@
 package com.arturmaslov.skubaware.ui.compose
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Surface
@@ -32,7 +38,8 @@ fun FilterDialogPreview() {
     SkubaWareTheme {
         FilterDialog(
             onDismiss = {},
-            onFilterOptionSelected = { _, _, _ -> },
+            onRangeFilterOptionSelected = { _, _, _ -> },
+            onDropdownFilterOptionSelected = { _, _ -> },
             initialProductList =
             listOf(
                 Product(
@@ -59,7 +66,8 @@ fun FilterDialogPreview() {
 @Composable
 fun FilterDialog(
     onDismiss: () -> Unit,
-    onFilterOptionSelected: (ProductFilterOption, Float, Float) -> Unit,
+    onRangeFilterOptionSelected: (ProductFilterOption, Float, Float) -> Unit,
+    onDropdownFilterOptionSelected: (ProductFilterOption, String) -> Unit,
     initialProductList: List<Product?>
 ) {
     val productFilterOptionList = ProductFilterOption.values().toList()
@@ -79,15 +87,18 @@ fun FilterDialog(
                     text = stringResource(R.string.filter_by),
                     style = MaterialTheme.typography.titleSmall
                 )
+                Spacer(modifier = Modifier.height(4.dp))
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top)
+                    verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Top)
                 ) {
                     productFilterOptionList.forEach { option ->
                         FilterOptionItem(
                             option,
-                            onFilterOptionSelected,
-                            initialProductList
+                            onRangeFilterOptionSelected,
+                            onDropdownFilterOptionSelected,
+                            initialProductList,
                         )
+                        Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
             }
@@ -98,11 +109,19 @@ fun FilterDialog(
 @Composable
 fun FilterOptionItem(
     option: ProductFilterOption,
-    onFilterSelected: (ProductFilterOption, Float, Float) -> Unit,
+    onRangeFilterSelected: (ProductFilterOption, Float, Float) -> Unit,
+    onDropdownFilterSelected: (ProductFilterOption, String) -> Unit,
     initialProductList: List<Product?>
 ) {
     var initialMinValue = 0f
     var initialMaxValue = 0f
+    var listOfDistinctNames = emptyList<String>()
+    var listOfDistinctBrands = emptyList<String>()
+
+    Text(
+        text = option.filterOption,
+        style = MaterialTheme.typography.labelMedium
+    )
 
     when (option) {
         ProductFilterOption.SKN -> {
@@ -132,50 +151,111 @@ fun FilterOptionItem(
                 ?: 0.0f
         }
 
-        else -> {}
+        ProductFilterOption.NAME -> {
+            listOfDistinctNames = initialProductList.mapNotNull {
+                it?.name
+            }.distinct()
+        }
+
+        ProductFilterOption.BRAND -> {
+            listOfDistinctBrands = initialProductList.mapNotNull {
+                it?.brand
+            }.distinct()
+        }
     }
 
     when (option) {
         ProductFilterOption.SKN, ProductFilterOption.BUYER_CODE, ProductFilterOption.QUANTITY -> {
-            var slidingRange by remember {
-                mutableStateOf(initialMinValue..initialMaxValue)
-            }
-            Text(
-                text = option.filterOption,
-                style = MaterialTheme.typography.labelMedium
+            RangeFilterItem(
+                option = option,
+                onRangeFilterSelected = onRangeFilterSelected,
+                initialMinValue = initialMinValue,
+                initialMaxValue = initialMaxValue
             )
-            RangeSlider(
-                value = slidingRange,
-                steps = 100,
-                onValueChange = { range ->
-                    slidingRange = range
-                },
-                valueRange = initialMinValue..initialMaxValue,
-                onValueChangeFinished = {
-                    onFilterSelected(
-                        option,
-                        slidingRange.start,
-                        slidingRange.endInclusive
-                    )
-                },
-            )
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = slidingRange.start.toInt().toString(),
-                    style = MaterialTheme.typography.labelSmall,
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = slidingRange.endInclusive.toInt().toString(),
-                    style = MaterialTheme.typography.labelSmall,
+        }
+
+        ProductFilterOption.NAME -> {
+            DropdownFilterItem(option, listOfDistinctNames, onDropdownFilterSelected)
+        }
+
+        ProductFilterOption.BRAND -> {
+            DropdownFilterItem(option, listOfDistinctBrands, onDropdownFilterSelected)
+        }
+    }
+}
+
+@Composable
+fun DropdownFilterItem(
+    option: ProductFilterOption,
+    list: List<String>,
+    onDropdownFilterSelected: (ProductFilterOption, String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedIndex by remember { mutableStateOf(0) }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = { expanded = true })
+            .background(MaterialTheme.colorScheme.inverseOnSurface)
+    ) {
+        Text(text = list[selectedIndex])
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            list.forEachIndexed { index, optionName ->
+                DropdownMenuItem(
+                    onClick = {
+                        selectedIndex = index
+                        expanded = false
+                        onDropdownFilterSelected(option, optionName)
+                    },
+                    text = { Text(text = optionName) }
                 )
             }
         }
+    }
+}
 
-        else -> {}
+@Composable
+fun RangeFilterItem(
+    option: ProductFilterOption,
+    onRangeFilterSelected: (ProductFilterOption, Float, Float) -> Unit,
+    initialMinValue: Float,
+    initialMaxValue: Float
+) {
+    var slidingRange by remember {
+        mutableStateOf(initialMinValue..initialMaxValue)
+    }
+    RangeSlider(
+        value = slidingRange,
+        steps = 100,
+        onValueChange = { range ->
+            slidingRange = range
+        },
+        valueRange = initialMinValue..initialMaxValue,
+        onValueChangeFinished = {
+            onRangeFilterSelected(
+                option,
+                slidingRange.start,
+                slidingRange.endInclusive
+            )
+        },
+    )
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = slidingRange.start.toInt().toString(),
+            style = MaterialTheme.typography.labelSmall,
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        Text(
+            text = slidingRange.endInclusive.toInt().toString(),
+            style = MaterialTheme.typography.labelSmall,
+        )
     }
 }
 

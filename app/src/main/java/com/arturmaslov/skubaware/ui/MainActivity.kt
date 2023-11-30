@@ -101,11 +101,17 @@ class MainActivity : ComponentActivity(), UiHelper {
                                     onSortOptionChanged = { productSortOption ->
                                         mainVM.sortProductLists(productSortOption)
                                     },
-                                    onFilterOptionChanged = { option, from, to ->
+                                    onRangeFilterOptionChanged = { option, from, to ->
                                         mainVM.filterProductLists(
                                             by = option,
                                             from = from,
                                             to = to
+                                        )
+                                    },
+                                    onDropdownFilterOptionChanged = { option, optionName ->
+                                        mainVM.filterProductLists(
+                                            by = option,
+                                            optionName = optionName
                                         )
                                     }
                                 )

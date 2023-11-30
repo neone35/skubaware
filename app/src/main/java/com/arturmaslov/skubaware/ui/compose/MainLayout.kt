@@ -34,7 +34,8 @@ fun MainLayout(
     onSortDialogDismiss: () -> Unit,
     onFilterDialogDismiss: () -> Unit,
     currentSortOption: ProductSortOption,
-    onFilterOptionChanged: (ProductFilterOption, Float, Float) -> Unit
+    onRangeFilterOptionChanged: (ProductFilterOption, Float, Float) -> Unit,
+    onDropdownFilterOptionChanged: (ProductFilterOption, String) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -87,8 +88,11 @@ fun MainLayout(
         }
         if (isSortFilterDialogVisible.second) {
             FilterDialog(
-                onFilterOptionSelected = { option, from, to ->
-                    onFilterOptionChanged(option, from, to)
+                onRangeFilterOptionSelected = { option, from, to ->
+                    onRangeFilterOptionChanged(option, from, to)
+                },
+                onDropdownFilterOptionSelected = { option, optionName ->
+                    onDropdownFilterOptionChanged(option, optionName)
                 },
                 onDismiss = onFilterDialogDismiss,
                 initialProductList = initialProductList

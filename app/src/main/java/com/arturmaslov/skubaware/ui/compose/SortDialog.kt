@@ -2,7 +2,9 @@ package com.arturmaslov.skubaware.ui.compose
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -68,6 +70,7 @@ fun SortDialog(
                     text = stringResource(R.string.sort_by),
                     style = MaterialTheme.typography.titleSmall
                 )
+                Spacer(modifier = Modifier.height(4.dp))
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(minSize = 100.dp),
                     verticalArrangement = Arrangement.spacedBy(0.dp),
