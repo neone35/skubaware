@@ -30,6 +30,7 @@ import com.arturmaslov.skubaware.ui.theme.SkubaWareTheme
 fun SkubaTopAppBarPreview() {
     SkubaWareTheme {
         SkubaTopAppBar(
+            onSortClick = {},
             onFilterClick = {}
         )
     }
@@ -38,6 +39,7 @@ fun SkubaTopAppBarPreview() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SkubaTopAppBar(
+    onSortClick: () -> Unit,
     onFilterClick: () -> Unit
 ) {
     TopAppBar(
@@ -60,6 +62,13 @@ fun SkubaTopAppBar(
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
                 verticalAlignment = Alignment.Top
             ) {
+                IconButton(onClick = onSortClick) {
+                    Icon(
+                        ImageVector.vectorResource(R.drawable.ic_sort_24),
+                        contentDescription = Constants.EMPTY_STRING,
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
                 IconButton(onClick = onFilterClick) {
                     Icon(
                         ImageVector.vectorResource(R.drawable.ic_filter_alt_24),

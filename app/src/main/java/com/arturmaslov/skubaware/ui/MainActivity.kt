@@ -53,13 +53,17 @@ class MainActivity : ComponentActivity(), UiHelper {
                 mainVM.startProductList().collectAsState().value ?: emptyList()
             val finalProductList = mainVM.finalProductList().collectAsState().value ?: emptyList()
 
-            var isFilterSortDialogVisible by remember { mutableStateOf(false) }
+            var isSortDialogVisible by remember { mutableStateOf(false) }
+            var isFilterDialogVisible by remember { mutableStateOf(false) }
             val productSortOption = mainVM.productSortOption().collectAsState().value
 
             SkubaWareTheme {
                 Scaffold(
                     topBar = {
-                        SkubaTopAppBar(onFilterClick = { isFilterSortDialogVisible = true })
+                        SkubaTopAppBar(
+                            onSortClick = { isSortDialogVisible = true },
+                            onFilterClick = { isFilterDialogVisible = true }
+                        )
                     },
                     content = {
                         Surface(
@@ -87,14 +91,16 @@ class MainActivity : ComponentActivity(), UiHelper {
                                             )
                                         }
                                     },
-                                    isFilterSortDialogVisible = isFilterSortDialogVisible,
+                                    isSortFilterDialogVisible = Pair(
+                                        isSortDialogVisible,
+                                        isFilterDialogVisible
+                                    ),
+                                    onSortDialogDismiss = { isSortDialogVisible = false },
+                                    onFilterDialogDismiss = { isFilterDialogVisible = false },
+                                    currentSortOption = productSortOption,
                                     onSortOptionChanged = { productSortOption ->
                                         mainVM.sortProductLists(productSortOption)
                                     },
-                                    onFilterSortDialogDismiss = {
-                                        isFilterSortDialogVisible = false
-                                    },
-                                    currentSortOption = productSortOption,
                                     onFilterOptionChanged = { option, from, to ->
                                         mainVM.filterProductLists(
                                             by = option,

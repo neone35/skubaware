@@ -29,9 +29,10 @@ fun MainLayout(
     onStartClick: (Product) -> Unit,
     onFinalClick: (Product) -> Unit,
     onFabClick: () -> Unit,
-    isFilterSortDialogVisible: Boolean,
+    isSortFilterDialogVisible: Pair<Boolean, Boolean>,
     onSortOptionChanged: (ProductSortOption) -> Unit,
-    onFilterSortDialogDismiss: () -> Unit,
+    onSortDialogDismiss: () -> Unit,
+    onFilterDialogDismiss: () -> Unit,
     currentSortOption: ProductSortOption,
     onFilterOptionChanged: (ProductFilterOption, Float, Float) -> Unit
 ) {
@@ -77,14 +78,19 @@ fun MainLayout(
                 contentDescription = Constants.EMPTY_STRING
             )
         }
-        if (isFilterSortDialogVisible) {
-            FilterSortDialog(
+        if (isSortFilterDialogVisible.first) {
+            SortDialog(
                 onSortOptionSelected = { onSortOptionChanged(it) },
+                onDismiss = onSortDialogDismiss,
+                currentSortOption = currentSortOption
+            )
+        }
+        if (isSortFilterDialogVisible.second) {
+            FilterDialog(
                 onFilterOptionSelected = { option, from, to ->
                     onFilterOptionChanged(option, from, to)
                 },
-                onDismiss = onFilterSortDialogDismiss,
-                currentSortOption = currentSortOption,
+                onDismiss = onFilterDialogDismiss,
                 initialProductList = initialProductList
             )
         }
