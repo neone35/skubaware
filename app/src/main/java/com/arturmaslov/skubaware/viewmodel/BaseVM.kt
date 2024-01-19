@@ -1,6 +1,5 @@
 package com.arturmaslov.skubaware.viewmodel
 
-import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arturmaslov.skubaware.data.source.MainRepository
@@ -12,11 +11,10 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 open class BaseVM(
-    mainRepo: MainRepository,
-    private val app: Application
+    mainRepo: MainRepository? = null
 ) : ViewModel() {
 
-    val remoteResponse = mainRepo.remoteResponse as SharedFlow<String?>
+    val remoteResponse = mainRepo?.remoteResponse as SharedFlow<String?>
 
     private val internetIsAvailable = MutableStateFlow(true)
     private val loadStatus = MutableStateFlow(LoadStatus.LOADING)
@@ -25,7 +23,7 @@ open class BaseVM(
         // runs every time VM is created (not view created)
         viewModelScope.launch {
             loadStatus.emit(LoadStatus.LOADING)
-            internetIsAvailable.value = NetworkChecker(app).isNetworkConnected()
+            internetIsAvailable.value = NetworkChecker().isNetworkConnected()
             loadStatus.emit(LoadStatus.DONE)
         }
     }

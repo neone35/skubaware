@@ -1,22 +1,20 @@
 package com.arturmaslov.skubaware.viewmodel
 
-import android.app.Application
 import androidx.lifecycle.viewModelScope
 import com.arturmaslov.skubaware.App
 import com.arturmaslov.skubaware.R
 import com.arturmaslov.skubaware.data.models.Product
-import com.arturmaslov.skubaware.data.source.MainRepository
 import com.arturmaslov.skubaware.data.source.remote.LoadStatus
+import com.arturmaslov.skubaware.data.usecase.GetLocalProductsUseCase
 import com.arturmaslov.skubaware.data.usecase.UpdateLocalWithRemoteUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class MainVM(
-    private val mainRepo: MainRepository,
-    app: Application,
+    private val getLocalProductsUseCase: GetLocalProductsUseCase,
     private val updateLocalWithRemoteUseCase: UpdateLocalWithRemoteUseCase
-) : BaseVM(mainRepo, app) {
+) : BaseVM() {
 
     private var initialProductList: List<Product?>? = emptyList()
     private val startProductList = MutableStateFlow<List<Product?>?>(emptyList())
@@ -34,7 +32,7 @@ class MainVM(
         viewModelScope.launch {
             setLoadStatus(LoadStatus.LOADING)
             try {
-                val localProducts = mainRepo.getLocalProducts()
+                val localProducts = getLocalProductsUseCase.execute()
                 // show local data without internet
                 val internetIsAvailable = internetIsAvailable().value
                 val localDataExists = !localProducts.isNullOrEmpty()

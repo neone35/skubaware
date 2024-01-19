@@ -14,11 +14,11 @@ import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 
 val repoModule = module {
+    single { provideLocalDatabase(androidApplication()) }
     single { provideMainRepository(get(), get(), get()) }
     single { provideLocalDataSource(get(), get()) }
     single { provideRemoteDataSource(get(), get()) }
     single { provideDispatcherIO() }
-    single { provideLocalDatabase(androidApplication()) }
 }
 
 fun provideLocalDatabase(app: Application): LocalDatabase {
