@@ -61,11 +61,9 @@ dependencies {
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("androidx.activity:activity-ktx:1.8.2")
-    implementation("androidx.fragment:fragment-ktx:1.6.2")
     // koin
     implementation("io.insert-koin:koin-android:3.3.2")
     // lifecycle
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     // compose
     implementation("androidx.activity:activity-compose:1.8.2")
@@ -74,7 +72,6 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.runtime:runtime-livedata")
     implementation("com.github.skydoves:landscapist-glide:2.2.10")
     implementation("com.github.skydoves:landscapist-placeholder:2.2.10")
     // network

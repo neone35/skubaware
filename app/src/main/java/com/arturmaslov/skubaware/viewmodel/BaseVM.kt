@@ -2,6 +2,7 @@ package com.arturmaslov.skubaware.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.arturmaslov.skubaware.App
 import com.arturmaslov.skubaware.data.source.MainRepository
 import com.arturmaslov.skubaware.data.source.remote.LoadStatus
 import com.arturmaslov.skubaware.helpers.utils.NetworkChecker
@@ -14,7 +15,7 @@ open class BaseVM(
     mainRepo: MainRepository? = null
 ) : ViewModel() {
 
-    val remoteResponse = mainRepo?.remoteResponse as SharedFlow<String?>
+    val remoteResponse = mainRepo?.remoteResponse as SharedFlow<String?>?
 
     private val internetIsAvailable = MutableStateFlow(true)
     private val loadStatus = MutableStateFlow(LoadStatus.LOADING)
@@ -23,7 +24,7 @@ open class BaseVM(
         // runs every time VM is created (not view created)
         viewModelScope.launch {
             loadStatus.emit(LoadStatus.LOADING)
-            internetIsAvailable.value = NetworkChecker().isNetworkConnected()
+            internetIsAvailable.value = NetworkChecker(App.getAppContext()).isNetworkConnected()
             loadStatus.emit(LoadStatus.DONE)
         }
     }

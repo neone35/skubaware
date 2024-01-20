@@ -126,7 +126,7 @@ class MainActivity : ComponentActivity(), UiHelper {
     override fun setObservers() {
         lifecycleScope.launch { observeInternetAvailability(mainVM.internetIsAvailable()) }
         lifecycleScope.launch { observeLoadStatusToDisableBack(mainVM.loadStatus()) }
-        lifecycleScope.launch { observeRepositoryResponse(mainVM.remoteResponse) }
+        lifecycleScope.launch { mainVM.remoteResponse?.let { observeRepositoryResponse(it) } }
     }
 
     override fun setListeners() {
